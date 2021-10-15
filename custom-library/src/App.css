@@ -4,6 +4,14 @@ html, body, *{
   padding: 0;
   box-sizing: border-box;
 }
+*{
+  font-family: 'Raleway', sans-serif;
+}
+hr{
+  width: 60%;
+  margin: 20px 0;
+}
+
 .App{
   display: flex;
   flex-direction: column;
@@ -15,8 +23,6 @@ html, body, *{
   color: wheat;
 }
 
-
-
 h1,h2{
   font-family: 'Raleway', sans-serif;
   font-weight: 600;
@@ -25,4 +31,5 @@ h1,h2{
 h2{
 font-weight: 400;
 }
+
 
