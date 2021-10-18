@@ -4,6 +4,9 @@ export interface AccordionProps {
 
 }
 export interface AccordionItemData {
-    title: string;
-    content: string;
+    title?: string;
+    content?: string;
+    onToggle?: () => void;
+    active?: boolean;
+    contentHeight?: number;
 }

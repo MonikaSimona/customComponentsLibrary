@@ -16,11 +16,30 @@ hr{
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
+  /* height: 100vh; */
   width: 100%;
   font-family: 'Raleway', sans-serif;
   background-color: #282c34;
   color: wheat;
+}
+.pageContainer{
+  max-width: 900px;
+  margin: 0 auto;
+
+}
+.post{
+ border: 1px solid bisque;
+ margin: 2px;
+ border-radius: 5px;
+ text-align: center;
+}
+.post p{
+  width: 50%;
+  margin: 0 auto;
+  color: white;
+}
+.post h1 {
+  font-size: 18px;
 }
 
 h1,h2{

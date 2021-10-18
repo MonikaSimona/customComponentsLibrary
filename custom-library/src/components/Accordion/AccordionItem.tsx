@@ -1,27 +1,30 @@
-import React, { useState } from 'react'
-import { AccordionItemContainer, AccordionContent, AccordionHeader, AccordionTitle, AccordionToggle } from './Accordion.styled'
+import React, { RefObject, useEffect, useRef, useState } from 'react'
+import { AccordionItemContainer, AccordionContentWrapper, AccordionHeader, AccordionTitle, AccordionToggle, AccordionContent } from './Accordion.styled'
 import { AccordionItemData } from './AccordionProps'
+import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 
 
+export const AccordionItem: React.FC<AccordionItemData> = ({ children, title, content, onToggle, active }) => {
 
-export const AccordionItem: React.FC<AccordionItemData> = ({ children, title, content }) => {
-    const [isActive, setIsActive] = useState(false)
+    const contentEl = useRef<HTMLDivElement>(null);
 
     return (
         <AccordionItemContainer>
-            <AccordionHeader onClick={() => { setIsActive(!isActive) }}>
+            <AccordionHeader onClick={onToggle}>
                 <AccordionTitle >
                     {title}
                 </AccordionTitle>
                 <AccordionToggle>
-                    {isActive ? "-" : "+"}
+                    {active ? <AiOutlineMinus /> : <AiOutlinePlus />}
                 </AccordionToggle>
             </AccordionHeader>
-            {isActive && (
+
+            <AccordionContentWrapper ref={contentEl} active={active} contentHeight={contentEl.current?.scrollHeight}>
                 <AccordionContent>
                     {content}
                 </AccordionContent>
-            )}
+            </AccordionContentWrapper>
+
         </AccordionItemContainer>
     )
 }

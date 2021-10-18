@@ -1,13 +1,15 @@
 import logo from './logo.svg';
 import './App.css';
 import Tooltip from './components/Tooltip/Tooltip';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from './components/Modal/Modal';
 import useModal from './components/Modal/useModal';
 import { IoMdClose } from "react-icons/io"
 import styled from 'styled-components';
 import Accordion from './components/Accordion/Accordion';
 import { AccordionItemData, AccordionProps } from './components/Accordion/AccordionProps';
+import { Pagination } from './components/Pagination/Pagination';
+import usePagination from './components/Pagination/usePagination';
 
 const Button = styled.button`
 
@@ -22,11 +24,33 @@ font-weight: bold;
 
 
 function App() {
+  const [pageData, setPageData] = useState<any>(null);
+  const [paginationInfo, setPaginationInfo] = useState({ data: [], numberOfElements: 0, numberOfPages: 0 })
+  const { clickedPageNumber, statePageNumber } = usePagination();
+
+  useEffect(() => {
+
+    fetch(`http://jsonplaceholder.typicode.com/comments`)
+      .then(res => res.json())
+      .then(data => setPaginationInfo({ data, numberOfElements: data.length, numberOfPages: data.length / 10 }))
+
+    getPageData();
+    // console.log(paginationInfo)
+    // console.log(pageData)
+  }, [statePageNumber])
   const { visible, toggle } = useModal();
+
+  const getPageData = () => {
+    const startIndex = statePageNumber;
+    const endIndex = startIndex + 10;
+    console.log(paginationInfo.data.slice(startIndex, endIndex))
+    setPageData(paginationInfo.data.slice(startIndex, endIndex))
+
+  }
   const data: AccordionItemData[] = [
     {
       title: "Title 1",
-      content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi quam, vehicula suscipit sem ac, ultricies laoreet purus. Fusce imperdiet consectetur erat id tincidunt. Etiam non fermentum odio, sed vestibulum metus."
+      content: "Lorem ipsum dolor  amet, consectetur adipiscing elit. Sed mi quam, vehicula suscipit sem ac, ultricies laoreet purus. Fusce imperdiet consectetur erat id tincidunt. Etiam non fermentum odio, sed vestibulum metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi quam, vehicula suscipit sem ac, ultricies laoreet purus. Fusce imperdiet consectetur erat id tincidunt. Etiam non fermentum odio, sed vestibulum metus."
     },
     {
       title: "Title 2",
@@ -67,8 +91,26 @@ function App() {
 
       <hr />
 
-      <h1>Accordion Example:</h1>
+      <h1>Accordion example:</h1>
       <Accordion accordionData={data}></Accordion>
+
+      <hr />
+      <h1>Paggination example:</h1>
+
+      <Pagination pageCount={paginationInfo.numberOfPages} currentPage={statePageNumber} clickedPageNumber={clickedPageNumber} >
+        <div className="pageContainer">
+          {pageData && pageData.map((page: any, index: number) => (
+            <div key={index} className="post">
+
+              <h1>
+                {page.email} id: <span>{page.id}</span>
+              </h1>
+              <p>{page.body}</p>
+            </div>
+          ))}
+        </div>
+
+      </Pagination>
     </div>
   );
 }
