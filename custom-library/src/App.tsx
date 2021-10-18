@@ -29,21 +29,25 @@ function App() {
   const { clickedPageNumber, statePageNumber } = usePagination();
 
   useEffect(() => {
+    fetch(`http://jsonplaceholder.typicode.com/comments`)
+      .then(res => res.json())
+      .then(data => setPageData(data.slice(0, 10)))
+  }, [])
+
+  useEffect(() => {
 
     fetch(`http://jsonplaceholder.typicode.com/comments`)
       .then(res => res.json())
       .then(data => setPaginationInfo({ data, numberOfElements: data.length, numberOfPages: data.length / 10 }))
 
     getPageData();
-    // console.log(paginationInfo)
-    // console.log(pageData)
+
   }, [statePageNumber])
   const { visible, toggle } = useModal();
 
   const getPageData = () => {
-    const startIndex = statePageNumber;
+    const startIndex = statePageNumber * 10 - 10;
     const endIndex = startIndex + 10;
-    console.log(paginationInfo.data.slice(startIndex, endIndex))
     setPageData(paginationInfo.data.slice(startIndex, endIndex))
 
   }
