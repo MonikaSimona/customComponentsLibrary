@@ -1,7 +1,9 @@
 export interface PaginationProps {
-    pageCount: number;
     currentPage: number;
-    clickedPageNumber: (pageNumber: number, pageCount: number) => void;
+    maxNumberOfPages: number;
+    numberOfPagesOnDisplay: number;
+    clickedPageNumber: (pageNumber: number, maxElementsCount: number) => void;
+    start: boolean;
 
 }
 export interface PageComponent {

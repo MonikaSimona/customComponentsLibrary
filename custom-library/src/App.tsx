@@ -26,7 +26,7 @@ font-weight: bold;
 function App() {
   const [pageData, setPageData] = useState<any>(null);
   const [paginationInfo, setPaginationInfo] = useState({ data: [], numberOfElements: 0, numberOfPages: 0 })
-  const { clickedPageNumber, statePageNumber } = usePagination();
+  const { clickedPageNumber, statePageNumber, start } = usePagination();
 
   useEffect(() => {
     fetch(`http://jsonplaceholder.typicode.com/comments`)
@@ -101,7 +101,7 @@ function App() {
       <hr />
       <h1>Paggination example:</h1>
 
-      <Pagination pageCount={paginationInfo.numberOfPages} currentPage={statePageNumber} clickedPageNumber={clickedPageNumber} >
+      <Pagination currentPage={statePageNumber} clickedPageNumber={clickedPageNumber} maxNumberOfPages={50} numberOfPagesOnDisplay={10} start={start} >
         <div className="pageContainer">
           {pageData && pageData.map((page: any, index: number) => (
             <div key={index} className="post">
@@ -109,12 +109,17 @@ function App() {
               <h1>
                 {page.email} id: <span>{page.id}</span>
               </h1>
-              <p>{page.body}</p>
+              {/* <p>{page.body}</p> */}
             </div>
           ))}
         </div>
 
       </Pagination>
+      <hr />
+
+      <h1>Carousel example:</h1>
+
+
     </div>
   );
 }

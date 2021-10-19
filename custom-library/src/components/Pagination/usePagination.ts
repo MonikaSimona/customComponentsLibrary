@@ -2,15 +2,17 @@ import { useState } from "react";
 
 const usePagination = () => {
     const [statePageNumber, setPageNumber] = useState<number>(1);
-    function clickedPageNumber(pageNumber: number, pageCount: number) {
-        if (pageNumber > pageCount || pageNumber < 1) {
+    const [start, setStart] = useState(false)
+    function clickedPageNumber(pageNumber: number, maxElementsCount: number) {
+        if (pageNumber > maxElementsCount || pageNumber < 1) {
             return;
         }
         setPageNumber(pageNumber)
-        console.log(pageNumber);
+        setStart(true);
+        console.log("usePagination:", pageNumber);
 
     }
-    return { clickedPageNumber, statePageNumber }
+    return { clickedPageNumber, statePageNumber, start }
 }
 
 export default usePagination;

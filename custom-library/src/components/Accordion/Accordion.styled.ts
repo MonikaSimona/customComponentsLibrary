@@ -5,7 +5,8 @@ import { AccordionItemData } from "./AccordionProps";
 export const AccordionWrapper = styled.div`
     position: relative;
     border-radius: 10px;
-    width: 500px;
+    max-width: 500px;
+    margin: 10px;
     
 `
 export const AccordionItemContainer = styled.div`

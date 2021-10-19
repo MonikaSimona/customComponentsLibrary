@@ -3,11 +3,15 @@ import styled from "styled-components";
 
 export const PageContentWrapper = styled.div`
 
+max-width: 620px;
+
 position: relative;
 
 `
 export const PaginationWrapper = styled.div`
-    position: relative;
+
+    position: sticky;
+    bottom: 0;
     display: flex;
     width: max-content;
     height: auto;
