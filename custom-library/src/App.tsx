@@ -1,5 +1,5 @@
 import logo from './logo.svg';
-import './App.css';
+import './App.scss';
 import Tooltip from './components/Tooltip/Tooltip';
 import { useEffect, useState } from 'react';
 import Modal from './components/Modal/Modal';
@@ -10,6 +10,7 @@ import Accordion from './components/Accordion/Accordion';
 import { AccordionItemData, AccordionProps } from './components/Accordion/AccordionProps';
 import { Pagination } from './components/Pagination/Pagination';
 import usePagination from './components/Pagination/usePagination';
+import { Carousel } from './components/Carousel/Carousel';
 
 const Button = styled.button`
 
@@ -45,13 +46,13 @@ function App() {
   }, [statePageNumber])
   const { visible, toggle } = useModal();
 
-  const getPageData = () => {
+  const getPageData = () => { // makes data into slices of then elements each , for pagination
     const startIndex = statePageNumber * 10 - 10;
     const endIndex = startIndex + 10;
     setPageData(paginationInfo.data.slice(startIndex, endIndex))
 
   }
-  const data: AccordionItemData[] = [
+  const accordionData: AccordionItemData[] = [
     {
       title: "Title 1",
       content: "Lorem ipsum dolor  amet, consectetur adipiscing elit. Sed mi quam, vehicula suscipit sem ac, ultricies laoreet purus. Fusce imperdiet consectetur erat id tincidunt. Etiam non fermentum odio, sed vestibulum metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi quam, vehicula suscipit sem ac, ultricies laoreet purus. Fusce imperdiet consectetur erat id tincidunt. Etiam non fermentum odio, sed vestibulum metus."
@@ -65,6 +66,39 @@ function App() {
       content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi quam, vehicula suscipit sem ac, ultricies laoreet purus. Fusce imperdiet consectetur erat id tincidunt. Etiam non fermentum odio, sed vestibulum metus."
     },
   ];
+
+  const carouselDataImages = [
+    "https://images.unsplash.com/photo-1634663476205-812f96a5705b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1631&q=80",
+
+
+    "https://images.unsplash.com/photo-1634638591750-cf2f8662944e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=697&q=80",
+
+
+    "https://images.unsplash.com/photo-1634578943775-82fe928d9e83?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80",
+
+
+    "https://images.unsplash.com/photo-1634491464263-60e06f561bab?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80",
+
+  ]
+  const carouselDataOther = [
+    <div className="slide">
+      <h3>Slide 1 title</h3>
+      <p>Slide 1 content text Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptate, odit!</p>
+    </div>,
+    <div className="slide">
+      <h3>Slide 2 title</h3>
+      <p>Slide 2 content text Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptate, odit!</p>
+    </div>,
+    <div className="slide">
+      <h3>Slide 3 title</h3>
+      <p>Slide 3 content text Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptate, odit!</p>
+    </div>,
+    <div className="slide">
+      <h3>Slide 4 title</h3>
+      <p>Slide 4 content text Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptate, odit!</p>
+    </div>,
+  ]
+
   return (
     <div className="App">
       <h1>Tooltip examples - hover over to show:</h1>
@@ -96,7 +130,7 @@ function App() {
       <hr />
 
       <h1>Accordion example:</h1>
-      <Accordion accordionData={data}></Accordion>
+      <Accordion accordionData={accordionData}></Accordion>
 
       <hr />
       <h1>Paggination example:</h1>
@@ -118,7 +152,20 @@ function App() {
       <hr />
 
       <h1>Carousel example:</h1>
+      <h2>(with images)</h2>
+      <div className="slider">
+        <Carousel slidesData={carouselDataImages} arrows={true} typeOfSlides="images" indicators={true} />
+      </div>
 
+      <hr />
+      <h1>Carousel example:</h1>
+      <h2>(with other content)</h2>
+
+      <div className="slider">
+        <Carousel slidesData={carouselDataOther} arrows={true} typeOfSlides="other" indicators={true} />
+      </div>
+
+      <hr />
 
     </div>
   );
