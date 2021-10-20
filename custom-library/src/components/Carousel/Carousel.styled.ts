@@ -3,19 +3,18 @@ import { CarouselItemProps } from './CarouselProps';
 import styled from "styled-components";
 
 export const CarouselWrapper = styled.div`
-
+  box-sizing: border-box;
     position: relative;
     display: flex;
     justify-content: center;
     align-items:center;
     min-height: 50vh;
-    width: 100%;
-    /* max-width: 768px; */
+
     overflow-x: hidden;
     /* background-color: rgba(255,255,255,0.1);
     border-radius:5px*/
     
-    padding: 10px;
+    padding: 20px;
 
 `
 export const LeftArrowWrapper = styled.div`
@@ -41,9 +40,6 @@ export const RightArrowWrapper = styled.div`
 
 
 `
-
-
-
 
 export const CarouselItemWrapper = styled.div<CarouselItemProps>`
 
@@ -85,8 +81,7 @@ export const CarouselItem = styled.div`
 `
 //carousel with images
 export const CarouselImage = styled.img`
-    
-    min-width: 500px;
+    width: 500px;
     height: 400px;
     object-fit: cover;
     object-position: center center;

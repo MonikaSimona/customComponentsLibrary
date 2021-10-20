@@ -11,6 +11,7 @@ import { AccordionItemData, AccordionProps } from './components/Accordion/Accord
 import { Pagination } from './components/Pagination/Pagination';
 import usePagination from './components/Pagination/usePagination';
 import { Carousel } from './components/Carousel/Carousel';
+import { Col, Row } from './components/Layout/Grid.styled'
 
 const Button = styled.button`
 
@@ -164,6 +165,16 @@ function App() {
       <div className="slider">
         <Carousel slidesData={carouselDataOther} arrows={true} typeOfSlides="other" indicators={true} />
       </div>
+
+      <hr />
+      <h1>Using Grid example:</h1>
+
+      <Row>
+        <Col md={8}> <div className="exampleCol">1</div> </Col>
+        <Col md={2}><div className="exampleCol">2</div></Col>
+        <Col md={2}><div className="exampleCol">2</div></Col>
+
+      </Row>
 
       <hr />
 

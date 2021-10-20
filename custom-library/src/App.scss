@@ -55,7 +55,7 @@ h2 {
 }
 
 .slider {
-  width: 700px;
+  max-width: 100%;
 }
 .slide {
   width: 70%;
@@ -64,4 +64,11 @@ h2 {
   h3 {
     margin: 20px 0;
   }
+}
+
+.exampleCol {
+  background-color: mediumaquamarine;
+  color: black;
+  text-align: center;
+  border: 1px solid red;
 }
