@@ -1,4 +1,3 @@
-
 import styled from "styled-components";
 import { AccordionItemData } from "./AccordionProps";
 
@@ -10,16 +9,14 @@ export const AccordionWrapper = styled.div`
     
 `
 export const AccordionItemContainer = styled.div`
-
     
     width: 100%;
     background-color: white;
     color: black;
     
-
-
 `
 export const AccordionHeader = styled.div`
+
     background-color:white;
     padding: 10px;
     display: flex;
@@ -27,7 +24,6 @@ export const AccordionHeader = styled.div`
     align-items: center;
     border-top: 0.5px solid rgba(0,0,0,0.5);
     cursor: pointer;
-    
 
 `
 

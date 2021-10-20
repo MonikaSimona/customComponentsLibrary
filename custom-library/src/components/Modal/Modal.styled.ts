@@ -1,4 +1,3 @@
-import { rgba, stripUnit } from "polished";
 import styled from "styled-components";
 
 
@@ -6,7 +5,7 @@ export const ModalWrapper = styled.div`
     position: absolute;
     min-height: 100vh;
     width: 100%;
-    background-color: ${rgba(0, 0, 0, 0.4)};
+    background-color: rgba(0, 0, 0, 0.4);
     z-index: 9000;
 
 `
@@ -25,8 +24,6 @@ export const ModalContainer = styled.div`
     max-width: 250px;
     height: 250px;
     border-radius: 5px;
-
-    
 
 `
 export const ModalHeader = styled.div`

@@ -1,26 +1,19 @@
-import { PageComponent, PaginationProps } from './PaginationsProps';
+import { PageComponent } from './PaginationsProps';
 import styled from "styled-components";
 
 export const PageContentWrapper = styled.div`
 
-max-width: 620px;
-
-position: relative;
+    max-width: 620px;
+    position: relative;
 
 `
 export const PaginationWrapper = styled.div`
 
-    position: sticky;
-    bottom: 0;
+    position: relative;
     display: flex;
     width: max-content;
     height: auto;
     margin: 20px auto;
-    /* background-color: gray; */
-
-    
-
-
 
 `
 export const PaginationComponent = styled.span<PageComponent>`
@@ -65,13 +58,3 @@ export const PaginationComponent = styled.span<PageComponent>`
 
 
 `
-// export const Page = styled.span`
-//     margin: 0 10px;
-//     cursor: pointer;
-//     border: 1px solid gray;
-//     padding: 10px;
-
-
-
-
-// `
