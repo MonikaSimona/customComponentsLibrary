@@ -169,10 +169,10 @@ function App() {
       <hr />
       <h1>Using Grid example:</h1>
 
-      <Row>
-        <Col md={8}> <div className="exampleCol">1</div> </Col>
-        <Col md={2}><div className="exampleCol">2</div></Col>
-        <Col md={2}><div className="exampleCol">2</div></Col>
+      <Row m={12}>
+        <Col md={12} > <div className="exampleCol">1</div> </Col>
+        <Col md={1} m={10}><div className="exampleCol">2</div></Col>
+        <Col md={3} m={10}><div className="exampleCol">2</div></Col>
 
       </Row>
 

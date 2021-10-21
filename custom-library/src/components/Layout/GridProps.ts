@@ -92,6 +92,37 @@ export interface GridProps {
 
 
 
+    //display
+    d?: "flex" | "block" | "inline-block";
+    dXS?: "flex" | "block" | "inline-block";
+    dSM?: "flex" | "block" | "inline-block";
+    dMD?: "flex" | "block" | "inline-block";
+    dLG?: "flex" | "block" | "inline-block";
+
+    //flex-direction (if d="flex")
+    fd?: "row" | "column" | "row reverse" | "column reverse";
+    fdXS?: "row" | "column" | "row reverse" | "column reverse";
+    fdSM?: "row" | "column" | "row reverse" | "column reverse";
+    fdMD?: "row" | "column" | "row reverse" | "column reverse";
+    fdLG?: "row" | "column" | "row reverse" | "column reverse";
+
+    //justify-content (if d="flex")
+    jc?: "space-between" | "space-around" | "space-evenly" | "flex-start" | "flex-end" | "center";
+    jcXS?: "space-between" | "space-around" | "space-evenly" | "flex-start" | "flex-end" | "center";
+    jcSM?: "space-between" | "space-around" | "space-evenly" | "flex-start" | "flex-end" | "center";
+    jcMD?: "space-between" | "space-around" | "space-evenly" | "flex-start" | "flex-end" | "center";
+    jcLG?: "space-between" | "space-around" | "space-evenly" | "flex-start" | "flex-end" | "center";
+
+    //align-items (if d="flex")
+    ai?: "stretch" | "flex-start" | "flex-end" | "center";
+    aiXS?: "stretch" | "flex-start" | "flex-end" | "center";
+    aiSM?: "stretch" | "flex-start" | "flex-end" | "center";
+    aiMD?: "stretch" | "flex-start" | "flex-end" | "center";
+    aiLG?: "stretch" | "flex-start" | "flex-end" | "center";
+
+
+
+
 
 
 }
