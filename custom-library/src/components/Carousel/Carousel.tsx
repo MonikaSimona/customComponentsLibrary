@@ -8,17 +8,21 @@ import { CaroselIndicatorsWrapper, CarouselImage, CarouselIndicator, CarouselIte
 export const Carousel: React.FC<CarouselProps> = ({ children, slidesData, arrows, typeOfSlides, indicators }) => {
     const [current, setCurrent] = useState(0);
     const [arrowToggler, setArrowToggler] = useState("right");
+    const [stopSlide, setStopSlide] = useState(false);
     const length = slidesData.length;
 
     useEffect(() => {
-        const timeOutId = setTimeout(() => {
-            setArrowToggler("right");
-            nextSlide();
-        }, 3000)
+        if (!stopSlide) {
+            var timeOutId = setTimeout(() => {
+                setArrowToggler("right");
+                nextSlide();
+            }, 3000)
+
+        }
         return () => {
             clearTimeout(timeOutId);
         }
-    }, [current])
+    }, [current, stopSlide])
 
     const nextSlide = () => {
         setCurrent(current === length - 1 ? 0 : current + 1);
@@ -32,7 +36,7 @@ export const Carousel: React.FC<CarouselProps> = ({ children, slidesData, arrows
         setCurrent(index)
     }
     return (
-        <CarouselWrapper>
+        <CarouselWrapper onMouseOver={() => setStopSlide(true)} onMouseLeave={() => setStopSlide(false)}>
             {arrows && (<>
                 <LeftArrowWrapper onClick={prevSlide}>
                     <BsChevronLeft />
@@ -44,7 +48,7 @@ export const Carousel: React.FC<CarouselProps> = ({ children, slidesData, arrows
 
             {typeOfSlides == "images" && slidesData ? slidesData.map((slide, index) => (
 
-                <CarouselItemWrapper key={index} active={index === current} whichArrow={arrowToggler}>
+                <CarouselItemWrapper overlay={stopSlide} key={index} active={index === current} whichArrow={arrowToggler}>
 
                     {index === current && (
                         <CarouselImage src={slide} />
@@ -53,7 +57,7 @@ export const Carousel: React.FC<CarouselProps> = ({ children, slidesData, arrows
                 </CarouselItemWrapper>
             )) : slidesData.map((slide, index) => (
 
-                <CarouselItemWrapper key={index} active={index === current} whichArrow={arrowToggler}>
+                <CarouselItemWrapper overlay={stopSlide} key={index} active={index === current} whichArrow={arrowToggler}>
 
                     {index === current && (
                         <CarouselItem >

@@ -15,6 +15,7 @@ export const CarouselWrapper = styled.div`
     border-radius:5px*/
     
     padding: 20px;
+   
 
 `
 export const LeftArrowWrapper = styled.div`
@@ -53,18 +54,33 @@ export const CarouselItemWrapper = styled.div<CarouselItemProps>`
         //   transform:translateX(0);
   
       `}
-
-    
     ` : `
-    
     // transform: translateX(100%);
     ${active && `
         
         opacity:1;
         // transform:translateX(0);
     `}
+    `}
+
+&::after{
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(100% - 40px );
+        height: calc(100% - 65px );
+        transform: translate(20px,30px);
+        border-radius: 5px;
+        transition:0.3s;
+        ${({ overlay }) => !overlay && `
+            transition:0.3s;
+            background: rgba(0,0,0,0.25)
     
     `}
+    }
+ 
+
   
 
 
@@ -80,13 +96,15 @@ export const CarouselItem = styled.div`
 
 `
 //carousel with images
-export const CarouselImage = styled.img`
+export const CarouselImage = styled.img<CarouselItemProps>`
     width: 500px;
     height: 400px;
     object-fit: cover;
     object-position: center center;
     border-radius: 5px;
-   
+
+ 
+    
  
 
 `

@@ -6,6 +6,7 @@ export interface CarouselProps {
 
 }
 export interface CarouselItemProps {
-    active: boolean;
+    active?: boolean;
     whichArrow?: string;
+    overlay?: boolean;
 }
