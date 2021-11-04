@@ -1,13 +1,14 @@
 import axios from 'axios'
 import React, { useEffect, useMemo, useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import Select from 'react-select';
+import Select, { OptionProps } from 'react-select';
 import { useTable } from 'react-table';
-import { Container, HeaderButton, HeaderButtonIcon, HeaderButtonsWrapper, HeadingIconWrapper, NumberOfInvoice, PageHeader, PageHeading, PageHeadingWrapper, RowIcon, RowIconsWrapper, TabButton, TabButtonsWrapper, Table, TableBody, TableData, TableHead, TableHeader, TableRow } from './InvoicesStyles.style';
+import { Container, EmptyCell, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, NumberOfInvoice, PageHeader, PageHeading, PageHeadingWrapper, RowIcon, RowIconsWrapper, SelectOptionImg, SelectOptionText, SelectOptionWrapper, TabButton, TabButtonsWrapper, Table, TableBody, TableData, TableHead, TableHeader, TableRow } from './InvoicesStyles.style';
 import { CgFileDocument } from 'react-icons/cg'
 import { BsFunnel, BsArchive } from 'react-icons/bs'
 import { CgCloseO } from 'react-icons/cg'
+import { useHistory } from 'react-router'
 interface Props {
+
 
 }
 
@@ -15,13 +16,14 @@ export interface Approver {
     name: string;
     imgUrl: string;
 }
-interface InvoiceData {
+export interface InvoiceData {
     id: number;
-    invoiceDate: string;
+    invoice_date: string;
     supplier: string;
-    dueDate: string;
-    invoiceNumber: string;
-    totalPrice: number;
+    due_date: string;
+    invoice_number: string;
+    total: number;
+    status: string;
     approver: Approver;
 
 }
@@ -29,6 +31,7 @@ interface InvoiceData {
 
 
 const Invoices = (props: Props) => {
+    const history = useHistory();
     const [hover, setHover] = useState(false);
     const [invoiceData, setInvoiceData] = useState<InvoiceData[]>([]);
 
@@ -44,45 +47,59 @@ const Invoices = (props: Props) => {
 
     useEffect(() => {
         getData();
-
-
     }, [])
-    // console.log(Object.keys(invoiceData[0]));
+
+    interface ApproverOptions {
+        value: string;
+        label: string;
+        customAbbreviation: string;
+
+    }
+    const selectApproverOptions: ApproverOptions[] = [
+        {
+            value: "approver1",
+            label: "Hubert Durand",
+            customAbbreviation: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+
+        },
+        {
+            value: "approver2",
+            label: "Louis Pignet",
+            customAbbreviation: "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
+
+
+        },
+
+    ]
+    const formatOptionLabel = (props: ApproverOptions) => (
+        <SelectOptionWrapper>
+            <SelectOptionImg src={props.customAbbreviation} alt="" />
+            <SelectOptionText>{props.label}</SelectOptionText>
+        </SelectOptionWrapper>
+    )
+
     const invoices = useMemo(() => [...invoiceData], [invoiceData])
 
-    // const columns: any = useMemo(() => [
-    //     {
-    //         Header: "Invoice Date",
-    //         accessor: "invoiceDate"
-    //     },
-    //     {
-    //         Header: "Supplier",
-    //         accessor: "supplier",
-    //     },
-    //     {
-    //         Header: "Due date",
-    //         accessor: "dueDate"
-    //     },
-    //     {
-    //         Header: "Invoice number",
-    //         accessor: "invoiceNumber"
-    //     },
-    //     {
-    //         Header: "total",
-    //         accessor: "totalPrice"
-    //     },
-    //     {
-    //         Header: "Approver",
-    //         accessor: "approver"
-    //     }
-    // ], [])
-    const invoicesColumns: any = useMemo(() => invoiceData[0] ? Object.keys(invoiceData[0]).filter((key) => key !== "rating" && key !== "id" && key !== "status").map((key) => {
+    const invoicesColumns: any = useMemo(() => invoiceData[0] ? Object.keys(invoiceData[0]).filter((key) => key !== "id").map((key) => {
         if (key === "approver") {
+
             return {
                 Header: key,
                 accessor: key,
-                Cell: (value: Approver) => <p > test</p>,
-                maxWidth: 10,
+                Cell: (value: any) => {
+                    const approver: Approver = value.cell.value;
+
+                    return <Select defaultValue={selectApproverOptions[0]} formatOptionLabel={formatOptionLabel} options={selectApproverOptions} />
+                },
+
+            }
+        }
+        if (key === "status") {
+            return {
+                Header: "",
+                accessor: "status",
+                Cell: ({ value }: any) => <EmptyCell></EmptyCell>,
+
             }
         }
         var headerKey = key;
@@ -121,25 +138,29 @@ const Invoices = (props: Props) => {
     }
     const tableInstance = useTable({ columns: invoicesColumns, data: invoices }, tableHooks);
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
+
     return (
         <Container>
             <PageHeader>
                 <PageHeadingWrapper>
                     <HeadingIconWrapper>
                         <CgFileDocument />
-                    </HeadingIconWrapper> <PageHeading>Pending supplier invoices</PageHeading> <NumberOfInvoice>({invoiceData.length})</NumberOfInvoice>
+                    </HeadingIconWrapper>
+                    <PageHeading>Pending supplier invoices</PageHeading> <NumberOfInvoice>({invoiceData.length})</NumberOfInvoice>
                 </PageHeadingWrapper>
 
                 <HeaderButtonsWrapper>
                     <HeaderButton>
-                        <HeaderButtonIcon>
-                            <BsFunnel /> Filters
-                        </HeaderButtonIcon>
+
+                        <BsFunnel className="icon" />
+
+                        Filters
                     </HeaderButton>
                     <HeaderButton>
-                        <HeaderButtonIcon>
-                            <BsArchive /> Archives
-                        </HeaderButtonIcon>
+
+                        <BsArchive className="icon" />
+
+                        Archives
                     </HeaderButton>
                 </HeaderButtonsWrapper>
             </PageHeader>
@@ -153,7 +174,7 @@ const Invoices = (props: Props) => {
             <Table {...getTableProps()}>
                 <TableHead>
                     {headerGroups.map((headerGroup) => (
-                        <TableRow {...headerGroup.getHeaderGroupProps()} >
+                        <TableRow isHeader={true} {...headerGroup.getHeaderGroupProps()} >
                             {headerGroup.headers.map((column) => (
                                 <TableHeader {...column.getHeaderProps()}>
                                     {column.render("Header")}
@@ -165,7 +186,10 @@ const Invoices = (props: Props) => {
                 <TableBody {...getTableBodyProps()}>
                     {rows.map((row) => {
                         prepareRow(row);
-                        return <TableRow {...row.getRowProps} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)}>
+                        return <TableRow isHeader={false} {...row.getRowProps} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)}
+
+                            onClick={() => { history.push("/details", row.values) }}
+                        >
                             {row.cells.map((cell, index) => (
                                 <TableData  {...cell.getCellProps()}>{cell.render("Cell")}</TableData>
                             ))}
@@ -178,3 +202,4 @@ const Invoices = (props: Props) => {
 }
 
 export default Invoices
+
