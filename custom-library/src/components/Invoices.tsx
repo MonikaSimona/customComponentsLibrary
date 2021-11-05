@@ -7,6 +7,8 @@ import { CgFileDocument } from 'react-icons/cg'
 import { BsFunnel, BsArchive } from 'react-icons/bs'
 import { CgCloseO } from 'react-icons/cg'
 import { useHistory } from 'react-router'
+import _, { uniqueId } from "lodash";
+import Tooltip from '../customCumponents/Tooltip/Tooltip';
 interface Props {
 
 
@@ -27,7 +29,28 @@ export interface InvoiceData {
     approver: Approver;
 
 }
+export interface ApproverOptions {
+    value: string;
+    label: string;
+    customAbbreviation: string;
 
+}
+export const selectApproverOptions: ApproverOptions[] = [
+    {
+        value: "approver1",
+        label: "Hubert Durand",
+        customAbbreviation: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+
+    },
+    {
+        value: "approver2",
+        label: "Louis Pignet",
+        customAbbreviation: "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
+
+
+    },
+
+]
 
 
 const Invoices = (props: Props) => {
@@ -49,28 +72,7 @@ const Invoices = (props: Props) => {
         getData();
     }, [])
 
-    interface ApproverOptions {
-        value: string;
-        label: string;
-        customAbbreviation: string;
 
-    }
-    const selectApproverOptions: ApproverOptions[] = [
-        {
-            value: "approver1",
-            label: "Hubert Durand",
-            customAbbreviation: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-
-        },
-        {
-            value: "approver2",
-            label: "Louis Pignet",
-            customAbbreviation: "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
-
-
-        },
-
-    ]
     const formatOptionLabel = (props: ApproverOptions) => (
         <SelectOptionWrapper>
             <SelectOptionImg src={props.customAbbreviation} alt="" />
@@ -80,7 +82,7 @@ const Invoices = (props: Props) => {
 
     const invoices = useMemo(() => [...invoiceData], [invoiceData])
 
-    const invoicesColumns: any = useMemo(() => invoiceData[0] ? Object.keys(invoiceData[0]).filter((key) => key !== "id").map((key) => {
+    const invoicesColumns: any = useMemo(() => invoiceData[0] ? Object.keys(invoiceData[0]).filter((key) => key !== "random").map((key) => {
         if (key === "approver") {
 
             return {
@@ -88,9 +90,18 @@ const Invoices = (props: Props) => {
                 accessor: key,
                 Cell: (value: any) => {
                     const approver: Approver = value.cell.value;
+                    const defVal: any | undefined = _.find(selectApproverOptions, { label: approver.name })
 
-                    return <Select defaultValue={selectApproverOptions[0]} formatOptionLabel={formatOptionLabel} options={selectApproverOptions} />
+                    return <Select defaultValue={defVal} formatOptionLabel={formatOptionLabel} options={selectApproverOptions} />
                 },
+
+            }
+        }
+        if (key === "id") {
+            return {
+                Header: "",
+                accessor: "id",
+                Cell: ({ value }: any) => <EmptyCell></EmptyCell>,
 
             }
         }
@@ -124,9 +135,13 @@ const Invoices = (props: Props) => {
                 Cell: ({ row }: any) => {
 
                     return <RowIconsWrapper>
-                        <RowIcon isBlock={hover}>
-                            <CgCloseO />
-                        </RowIcon>
+                        <Tooltip message="DELETE" bgColor="#193169" textColor="white" position="top center">
+                            <RowIcon isBlock={true} onClick={() => deleteInvoice(row.values.id)}>
+
+                                <CgCloseO />
+
+                            </RowIcon>
+                        </Tooltip>
                         <RowIcon isBlock={true}>
                             text
                         </RowIcon>
@@ -138,9 +153,37 @@ const Invoices = (props: Props) => {
     }
     const tableInstance = useTable({ columns: invoicesColumns, data: invoices }, tableHooks);
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
+    const newInvoice = () => {
+        axios.post("http://localhost:3000/posts", {
+            id: 4,
+            invoice_date: "20/01/2021",
+            supplier: "simona",
+            due_date: "21/03/2021",
+            invoice_number: "384848NN",
+            total: 500.52,
+            approver: {
+                name: "Hubert Durand",
+                imgUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+            },
+            status: "new"
+        }, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }
+        ).then((response) => { console.log(response); })
+            .catch((err) => console.log(err))
+    }
 
+    const deleteInvoice = (id: number) => {
+        axios.delete(`http://localhost:3000/posts/${id}`)
+            .then(res => console.log(res))
+            .catch(err => console.log(err))
+    }
     return (
         <Container>
+            <button onClick={() => newInvoice()}>new post </button>
+            <button onClick={() => deleteInvoice(4)}>delete invoice</button>
             <PageHeader>
                 <PageHeadingWrapper>
                     <HeadingIconWrapper>
@@ -151,15 +194,11 @@ const Invoices = (props: Props) => {
 
                 <HeaderButtonsWrapper>
                     <HeaderButton>
-
                         <BsFunnel className="icon" />
-
                         Filters
                     </HeaderButton>
                     <HeaderButton>
-
                         <BsArchive className="icon" />
-
                         Archives
                     </HeaderButton>
                 </HeaderButtonsWrapper>
@@ -188,7 +227,7 @@ const Invoices = (props: Props) => {
                         prepareRow(row);
                         return <TableRow isHeader={false} {...row.getRowProps} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)}
 
-                            onClick={() => { history.push("/details", row.values) }}
+                        // onClick={() => { history.push("/details", row.values) }}
                         >
                             {row.cells.map((cell, index) => (
                                 <TableData  {...cell.getCellProps()}>{cell.render("Cell")}</TableData>

@@ -13,10 +13,11 @@ export const TooltipElement = styled.span<TooltipProps>`
     position: absolute;
     z-index: 9999;
     display: inline-block;
+    font-size: small;
     width: fit-content;
     text-align: center;
     height: auto;
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 10px 5px;
     line-height: 1;
     background-color: ${props => props.bgColor};

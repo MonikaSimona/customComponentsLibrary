@@ -13,6 +13,9 @@ interface HeaderButtonProps {
     isRecord?: boolean;
     isApprove?: boolean;
 }
+export interface DetailsProps {
+    first?: boolean;
+}
 
 export const Container = styled.div`
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
@@ -43,7 +46,7 @@ export const HeaderButtonsWrapper = styled.div`
 export const HeaderButton = styled.button<HeaderButtonProps>`
     display: flex;
     align-items: center;
-    border: 1px solid  ${({ isReject, isRecord, isApprove }) => isReject ? "#ee6276" : isRecord ? "transparent" : '#ebeef4'};
+    border: 1px solid  ${({ isReject, isRecord, isApprove }) => isReject ? "#ee6276" : isRecord ? "transparent" : '#c8ccd4'};
     background-color: ${({ isReject, isRecord, isApprove }) => isApprove ? "#01589f" : isRecord ? '#3682ae' : "white"};
     font-weight: ${({ isReject, isRecord, isApprove }) => isRecord ? "bold" : 300};
     color: ${({ isReject, isRecord, isApprove }) => isReject ? "#ee6276" : isRecord ? "white" : 'black'};
@@ -122,15 +125,20 @@ export const StatusIndicator = styled.span<InvoiceProps>`
 export const DetailsHeader = styled.div`
     display: flex;
     background-color: white;
-    border:1px solid #ebeef4 ;
+    border:1px solid #c8ccd4 ;
+    border-radius: 5px;
+    border-collapse: collapse;
 `
-export const DetailsSection = styled.div`
+
+
+export const DetailsSection = styled.div<DetailsProps>`
     padding:20px;
     display: flex;
-    width: 100%;
     justify-content:space-between;
     align-items: center;
-    border-right: 1px solid #ebeef4;
+    border-left: 1px solid #c8ccd4;
+    width: ${({ first }) => first && "60%"};
+   
 `
 export const Company = styled.div`
     display: flex;
@@ -141,7 +149,7 @@ export const CompanyInitial = styled.div`
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #ebeef4;
+    background-color: #c8ccd4;
     display: flex;
     justify-content:center;
     align-items: center;
@@ -154,20 +162,64 @@ export const CompanyInfo = styled.div`
     flex-direction: column;
 `
 export const CompanyName = styled.p`
-    color:#ebeef4 ;
+    color:#c8ccd4 ;
     font-weight: 400;
     margin: 0;
 `
 export const CompanyBillingAmount = styled.span`
     font-size: 25px;
     color: black;
+    font-weight: 500;
 `
 export const Sub = styled.sub`
-    color: #ebeef4;
+    color: #c8ccd4;
     font-size: small;
 `
 
+export const DateWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding-right: 100px;
 
+`
+export const SectionHeading = styled.p`
+    font-size: 13px;
+    color:#c8ccd4 ;
+    text-transform: uppercase;
+    margin: 0 0 10px 0;
+    font-weight:600;
+`
+export const Date = styled.p`
+    font-size: 17px;
+    color: black;
+    margin: 0;
+    font-weight: 600;
+`
+export const ApproverImage = styled.img`
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    margin-right: 10px;
+`
+
+export const InvoiceInfo = styled.div`
+    display: flex;
+    gap: 15px;
+`
+export const InvoiceInfoLeft = styled.div`
+    width: 50%;
+    height: 500px;
+    background-color: white;
+    border:1px solid #c8ccd4;
+    border-radius: 5px;
+
+`
+export const InvoiceInfoRight = styled.div`
+    display: flex;
+    flex-direction: column;
+`
 
 export const Table = styled.table`
     width: 100%;
@@ -200,8 +252,8 @@ export const TableHeader = styled.th`
     text-transform: uppercase;
     color: #b4bed5;
     padding: 5px;
-    border-left: 1px solid #b4bed5;
-    border-right: 1px solid #b4bed5;
+    /* border-left: 1px solid #b4bed5; */
+    /* border-right: 1px solid #b4bed5; */
     font-size: 13px;
     font-weight: 700;
     text-align: left;
@@ -223,11 +275,8 @@ export const EmptyCell = styled.span`
 export const TabButtonsWrapper = styled.div`
     margin-bottom: 10px;
 `
-
-
-
 export const TabButton = styled.button<InvoiceProps>`
-    border: 1px solid #ebeef4;
+    border: 1px solid #c8ccd4;
     background-color: transparent;
     color: black;
     font-weight: 300;
@@ -246,13 +295,11 @@ export const TabButton = styled.button<InvoiceProps>`
         border: 6px solid ${props => props.status && props.status === "new" ? "#fef8ec" : props.status === "recorded" ? "#e6f2f9" : props.status === "approved" ? "#e7f0e7" : "#e5e6f4"};
         background-color: ${props => props.status && props.status === "new" ? "#f7bf41" : props.status === "recorded" ? "#4dbef7" : props.status === "approved" ? "#57ab47" : "#4543c7"};
     }
-    /* transition: 0.3s; */
     &:hover{
         background-color: white;
         box-shadow: 6px 7px 15px -9px rgba(115,115,115,0.65);
         position: relative;
         cursor: pointer;
-        /* transition: 0.3s; */
         &::before{
             position: absolute;
             content: "";
@@ -261,22 +308,20 @@ export const TabButton = styled.button<InvoiceProps>`
             bottom:-1px;
             height: 3px;
             background-color: #3682ae;
-           
         }
     }
-
-
 `
 export const RowIconsWrapper = styled.div`
-    width: 200px;
+    width: 100px;
     display: flex;
     justify-content: space-between;
 `
 
 
-export const RowIcon = styled.span<IconProps>`
+export const RowIcon = styled.p<IconProps>`
     display: ${props => props.isBlock ? "block" : "none"};
-    color:#ebeef4 ;
+    color:#c8ccd4 ;
+    margin: 0;
 
 `
 export const SelectOptionWrapper = styled.div`
