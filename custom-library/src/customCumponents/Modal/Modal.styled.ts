@@ -21,8 +21,9 @@ export const ModalContainer = styled.div`
     padding: 10px;
     display: flex;
     flex-direction: column;
-    max-width: 250px;
-    height: 250px;
+    min-width: 250px;
+    height: auto;
+    min-height: 250px;
     border-radius: 5px;
 
 `

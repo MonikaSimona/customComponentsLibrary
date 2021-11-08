@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { MdOutlineArrowBackIosNew, MdOutlineRefresh } from 'react-icons/md'
 import { useLocation } from 'react-router'
-import { InvoiceData, selectApproverOptions, ApproverOptions } from './Invoices'
-import { ApproverImage, BackButton, Company, CompanyBillingAmount, CompanyInfo, CompanyInitial, CompanyName, Container, Date, DateWrapper, DetailsHeader, DetailsSection, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, PageHeader, PageHeading, PageHeadingWrapper, SectionHeading, SelectOptionText, StatusIndicator, Sub } from './InvoicesStyles.style'
+import { InvoiceData, Options } from './Invoices'
+
 import { CgCloseO, CgFileDocument } from 'react-icons/cg'
 import { AiOutlineFileSync, AiOutlineSave } from 'react-icons/ai'
 import Select from 'react-select'
 import _ from "lodash";
+import { BackButton, Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, PageHeader, PageHeading, PageHeadingWrapper, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, StatusIndicator } from './Style/InvoicesStyles.style'
+import { ApproverImage, Company, CompanyBillingAmount, CompanyInfo, CompanyInitial, CompanyName, Date, DateWrapper, DetailsHeader, DetailsSection, SectionHeading, Sub } from './Style/InvoiceDetailsStyles.style'
 
 
 
@@ -22,15 +24,19 @@ const InvoiceDetails = (props: Props) => {
     var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const stringDate = invoiceData.due_date.split("/");
     const month = months[stringDate[1] - 1];
-    const [selectedApprover, setSelectedApprover] = useState<ApproverOptions>();
+    const [selectedApprover, setSelectedApprover] = useState<Options>();
+    const options: Options[] = invoiceData.options;
 
 
 
-    const formatOptionLabel = (props: ApproverOptions) => (
+    const formatOptionLabel = (props: Options) => (
 
         <SelectOptionText>{props.label}</SelectOptionText>
 
     )
+
+
+
 
     // console.log(props.history)
     return (
@@ -102,7 +108,7 @@ const InvoiceDetails = (props: Props) => {
                             <SectionHeading>
                                 Approver
                             </SectionHeading>
-                            <Select options={selectApproverOptions} formatOptionLabel={formatOptionLabel} defaultValue={_.find(selectApproverOptions, { label: invoiceData.approver.name })}
+                            <Select options={options} formatOptionLabel={formatOptionLabel} defaultValue={_.find(options, { label: invoiceData.approver.name })}
                                 onChange={(selected) => {
                                     console.log(selected);
                                     selected && setSelectedApprover(selected)

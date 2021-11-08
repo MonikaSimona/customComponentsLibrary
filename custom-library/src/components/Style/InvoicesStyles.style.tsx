@@ -1,21 +1,6 @@
 import styled from 'styled-components';
-export interface InvoiceProps {
-    status: string;
-}
-export interface IconProps {
-    isBlock: boolean;
-}
-export interface RowProps {
-    isHeader: boolean;
-}
-interface HeaderButtonProps {
-    isReject?: boolean;
-    isRecord?: boolean;
-    isApprove?: boolean;
-}
-export interface DetailsProps {
-    first?: boolean;
-}
+import { HeaderButtonProps, IconProps, InvoiceProps } from '../Props';
+
 
 export const Container = styled.div`
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
@@ -46,19 +31,25 @@ export const HeaderButtonsWrapper = styled.div`
 export const HeaderButton = styled.button<HeaderButtonProps>`
     display: flex;
     align-items: center;
-    border: 1px solid  ${({ isReject, isRecord, isApprove }) => isReject ? "#ee6276" : isRecord ? "transparent" : '#c8ccd4'};
-    background-color: ${({ isReject, isRecord, isApprove }) => isApprove ? "#01589f" : isRecord ? '#3682ae' : "white"};
-    font-weight: ${({ isReject, isRecord, isApprove }) => isRecord ? "bold" : 300};
-    color: ${({ isReject, isRecord, isApprove }) => isReject ? "#ee6276" : isRecord ? "white" : 'black'};
+    border: 1px solid  ${({ isReject, isRecord }) => isReject ? "#ee6276" : isRecord ? "transparent" : '#c8ccd4'};
+    background-color: ${({ isRecord, isApprove }) => isApprove ? "#01589f" : isRecord ? '#3682ae' : "white"};
+    font-weight: ${({ isRecord }) => isRecord ? "bold" : 300};
+    color: ${({ isReject, isRecord }) => isReject ? "#ee6276" : isRecord ? "white" : 'black'};
     padding: 10px 30px;
     margin-left: 10px;
     position: relative;
+    opacity: 0.7;
     .icon{
         font-size: 15px;
         margin-right: 5px;
     }
     .icon-gray{
         color: gray;
+    }
+    transition: 0.3s;
+    &:hover{
+        cursor: pointer;
+        opacity: 1;
     }
 `
 export const PageHeadingWrapper = styled.div`
@@ -122,156 +113,7 @@ export const StatusIndicator = styled.span<InvoiceProps>`
     }
 
 `
-export const DetailsHeader = styled.div`
-    display: flex;
-    background-color: white;
-    border:1px solid #c8ccd4 ;
-    border-radius: 5px;
-    border-collapse: collapse;
-`
 
-
-export const DetailsSection = styled.div<DetailsProps>`
-    padding:20px;
-    display: flex;
-    justify-content:space-between;
-    align-items: center;
-    border-left: 1px solid #c8ccd4;
-    width: ${({ first }) => first && "60%"};
-   
-`
-export const Company = styled.div`
-    display: flex;
-    align-items: center;
-
-`
-export const CompanyInitial = styled.div`
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #c8ccd4;
-    display: flex;
-    justify-content:center;
-    align-items: center;
-    font-size: 25px;
-    color: black;
-    margin: 0 15px;
-`
-export const CompanyInfo = styled.div`
-    display: flex;
-    flex-direction: column;
-`
-export const CompanyName = styled.p`
-    color:#c8ccd4 ;
-    font-weight: 400;
-    margin: 0;
-`
-export const CompanyBillingAmount = styled.span`
-    font-size: 25px;
-    color: black;
-    font-weight: 500;
-`
-export const Sub = styled.sub`
-    color: #c8ccd4;
-    font-size: small;
-`
-
-export const DateWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    padding-right: 100px;
-
-`
-export const SectionHeading = styled.p`
-    font-size: 13px;
-    color:#c8ccd4 ;
-    text-transform: uppercase;
-    margin: 0 0 10px 0;
-    font-weight:600;
-`
-export const Date = styled.p`
-    font-size: 17px;
-    color: black;
-    margin: 0;
-    font-weight: 600;
-`
-export const ApproverImage = styled.img`
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    object-position: center top;
-    margin-right: 10px;
-`
-
-export const InvoiceInfo = styled.div`
-    display: flex;
-    gap: 15px;
-`
-export const InvoiceInfoLeft = styled.div`
-    width: 50%;
-    height: 500px;
-    background-color: white;
-    border:1px solid #c8ccd4;
-    border-radius: 5px;
-
-`
-export const InvoiceInfoRight = styled.div`
-    display: flex;
-    flex-direction: column;
-`
-
-export const Table = styled.table`
-    width: 100%;
-    color: white;
-    background-color: #f8f8f8;
-    border-collapse: collapse;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    background-color: white;
-    
-`
-export const TableHead = styled.thead`
-    border: 1px solid #b4bed5;
-    background-color: white;
-`
-
-export const TableRow = styled.tr<RowProps>`
-    
-    transition: 0.3s;
-    ${({ isHeader }) => !isHeader && `
-          &:hover{
-            cursor: pointer;
-            background-color: white;
-            box-shadow: 9px 11px 17px -7px rgba(156,156,156,0.78);
-    }
-    `}
-  
-`
-export const TableHeader = styled.th`
-    text-transform: uppercase;
-    color: #b4bed5;
-    padding: 5px;
-    /* border-left: 1px solid #b4bed5; */
-    /* border-right: 1px solid #b4bed5; */
-    font-size: 13px;
-    font-weight: 700;
-    text-align: left;
-`
-export const TableBody = styled.tbody`
-
-`
-export const TableData = styled.td`
-    padding: 10px 5px;
-    font-weight: 300;
-    text-align: left;
-    font-size: 15px;
-    color: black;
-`
-export const EmptyCell = styled.span`
-    display: inline-block;
-    width: 0;
-`
 export const TabButtonsWrapper = styled.div`
     margin-bottom: 10px;
 `
@@ -317,20 +159,22 @@ export const RowIconsWrapper = styled.div`
     justify-content: space-between;
 `
 
-
 export const RowIcon = styled.p<IconProps>`
     display: ${props => props.isBlock ? "block" : "none"};
     color:#c8ccd4 ;
     margin: 0;
-
+    transition: .3s;
+    &:hover{
+        color:  black;
+    }
+`
+export const SelectWrapper = styled.div`
+  
 `
 export const SelectOptionWrapper = styled.div`
     display: flex;
     width: 100%;
     align-items: center;
-    
-
-
 `
 export const SelectOptionImg = styled.img`
     width: 30px;
@@ -338,7 +182,17 @@ export const SelectOptionImg = styled.img`
     border-radius: 50%;
     object-position: center center;
     object-fit: cover;
-
+`
+export const SelectOptionInitial = styled.div`
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: #c8ccd4;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    font-size: 15px;
+    color: black;
 `
 export const SelectOptionText = styled.span`
     font-size: 14px;

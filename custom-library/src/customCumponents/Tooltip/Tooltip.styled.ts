@@ -24,7 +24,7 @@ export const TooltipElement = styled.span<TooltipProps>`
     color: ${props => props.textColor};
   
     ${({ position }) => position === "top center" ? `
-            top:-20px;
+            top:-30px;
             left: 50%;
             transform: translateX(-50%);
       ` : position === "top right" ? `
