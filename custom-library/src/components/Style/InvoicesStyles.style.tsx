@@ -151,12 +151,28 @@ export const TabButton = styled.button<InvoiceProps>`
             height: 3px;
             background-color: #3682ae;
         }
+      
     }
+    ${({ active }) => active && `
+           background-color: white;
+        box-shadow: 6px 7px 15px -9px rgba(115,115,115,0.65);
+        position: relative;
+        cursor: pointer;
+        &::before{
+            position: absolute;
+            content: "";
+            width: 100%;
+            left: 0;
+            bottom:-1px;
+            height: 3px;
+            background-color: #3682ae;
+        }
+        `}
 `
 export const RowIconsWrapper = styled.div`
     width: 100px;
     display: flex;
-    justify-content: space-between;
+    justify-content: end;
 `
 
 export const RowIcon = styled.p<IconProps>`

@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { MdOutlineArrowBackIosNew, MdOutlineRefresh } from 'react-icons/md'
 import { useLocation } from 'react-router'
-import { InvoiceData, Options } from './Invoices'
 
 import { CgCloseO, CgFileDocument } from 'react-icons/cg'
 import { AiOutlineFileSync, AiOutlineSave } from 'react-icons/ai'
@@ -10,6 +9,7 @@ import Select from 'react-select'
 import _ from "lodash";
 import { BackButton, Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, PageHeader, PageHeading, PageHeadingWrapper, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, StatusIndicator } from './Style/InvoicesStyles.style'
 import { ApproverImage, Company, CompanyBillingAmount, CompanyInfo, CompanyInitial, CompanyName, Date, DateWrapper, DetailsHeader, DetailsSection, SectionHeading, Sub } from './Style/InvoiceDetailsStyles.style'
+import { Options } from './Props'
 
 
 
