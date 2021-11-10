@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Colors } from "./InvoicesStyles.style";
 
 export const FormWrapper = styled.div`
     width: 400px;
@@ -19,30 +20,32 @@ export const FormHeading = styled.h1`
     font-weight: 600;
 `
 export const Label = styled.label`
-    font-size: 15px;
+    font-size: 13px;
     margin: 5px 0;
+    color: ${Colors.lightGray};
 
 `
 export const InputWrapper = styled.div`
     display: flex;
     width: 100%;
-    height: 32px;
+    height: 40px;
 
 `
 export const InputSufix = styled.span`
     display: flex;
-    padding: 10px;
+    width: 55.3px;
+    height: 40px;
     align-items: center;
     justify-content: center;
-    background-color: #c8ccd4;
+    background-color: ${Colors.lightGray};
 
 `
 export const Input = styled.input`
     width: 100%;
-    border:1px solid #c8ccd4;
+    border:1px solid ${Colors.lightGray};
     padding: 5px;
     &::placeholder{
-    color:#c8ccd4 ;
+    color:${Colors.lightGray} ;
     }
     &:focus-visible{
         outline:1px solid black !important;
@@ -53,10 +56,10 @@ export const DateInput = styled.input.attrs({
     type: "date",
 })`
     width: 100%;
-    border:1px solid #c8ccd4;
+    border:1px solid ${Colors.lightGray};
     padding: 5px;
     &::placeholder{
-    color:#c8ccd4 ;
+    color:${Colors.lightGray} ;
     }
     &:focus-visible{
         outline:1px solid black !important;
@@ -71,7 +74,7 @@ export const DateInput = styled.input.attrs({
 `
 export const SubmitButton = styled.button`
     width: 20%;
-    border: 1px solid #c8ccd4;
+    border: 1px solid ${Colors.lightGray};
     padding: 10px 15px;
     color:black;
     background-color: white;
@@ -80,7 +83,7 @@ export const SubmitButton = styled.button`
     transition: 0.3s;
     margin:20px auto 10px auto;
     &:hover{
-        background-color: #c8ccd4;
+        background-color: ${Colors.lightGray};
         cursor: pointer;
     }
 `

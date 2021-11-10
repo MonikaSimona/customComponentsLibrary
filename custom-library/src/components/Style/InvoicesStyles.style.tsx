@@ -1,11 +1,24 @@
 import styled from 'styled-components';
 import { HeaderButtonProps, IconProps, InvoiceProps } from '../Props';
 
+export enum Colors {
+    statusNew = "#f7bf41",
+    lightStatusNew = "#fef8ec",
+    statusRecorded = "#4dbef7",
+    lightStatusRecorded = "#e6f2f9",
+    statusApproved = "#57ab47",
+    lightStatusApproved = "#e7f0e7",
+    statusPaid = "#4543c7",
+    lightStatusPaid = "#e5e6f4",
+    lightGray = "#bfc1c5",
+    gray = "#9a9b9e"
+
+}
 
 export const Container = styled.div`
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
-    padding: 25px;
-    padding-top: 30px;
+    padding: 30px;
+    padding-top: 35px;
     font-family: "Poppins",sans-serif;
 `
 export const BackButton = styled.span`
@@ -82,22 +95,22 @@ export const StatusIndicator = styled.span<InvoiceProps>`
     text-transform: uppercase;
     ${({ status }) => status && status === "new"
         ? `
-        color:#f7bf41;
-        background-color:#fef8ec;
+        color:${Colors.statusNew};
+        background-color:${Colors.lightStatusNew};
     `
         : status === "approved"
             ? `
-        color:#57ab47;
-        background-color:#e7f0e7;
+        color:${Colors.statusApproved};
+        background-color:${Colors.lightStatusApproved};
     `
             : status === "recorded"
                 ? `
-        color:#4dbef7;
-        background-color:#e6f2f9;
+        color:${Colors.statusRecorded};
+        background-color:${Colors.lightStatusRecorded};
     `
                 : `
-        color:#4543c7;
-        background-color:#e5e6f4
+        color:${Colors.lightStatusPaid};
+        background-color:${Colors.lightStatusPaid}
     `}
     position: relative;
         &::after{
@@ -109,7 +122,7 @@ export const StatusIndicator = styled.span<InvoiceProps>`
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background-color: ${props => props.status && props.status === "new" ? "#f7bf41" : props.status === "recorded" ? "#4dbef7" : props.status === "approved" ? "#57ab47" : "#4543c7"};
+        background-color: ${props => props.status && props.status === "new" ? `${Colors.lightStatusNew}` : props.status === "recorded" ? `${Colors.statusRecorded}` : props.status === "approved" ? `${Colors.statusApproved}` : `${Colors.lightStatusPaid}`};
     }
 
 `
@@ -134,8 +147,8 @@ export const TabButton = styled.button<InvoiceProps>`
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        border: 6px solid ${props => props.status && props.status === "new" ? "#fef8ec" : props.status === "recorded" ? "#e6f2f9" : props.status === "approved" ? "#e7f0e7" : "#e5e6f4"};
-        background-color: ${props => props.status && props.status === "new" ? "#f7bf41" : props.status === "recorded" ? "#4dbef7" : props.status === "approved" ? "#57ab47" : "#4543c7"};
+        border: 6px solid ${props => props.status && props.status === "new" ? `${Colors.lightStatusNew}` : props.status === "recorded" ? `${Colors.lightStatusRecorded}` : props.status === "approved" ? `${Colors.lightStatusApproved}` : `${Colors.lightStatusPaid}`};
+        background-color: ${props => props.status && props.status === "new" ? `${Colors.statusNew}` : props.status === "recorded" ? `${Colors.statusRecorded}` : props.status === "approved" ? `${Colors.statusApproved}` : `${Colors.statusPaid}`};
     }
     &:hover{
         background-color: white;
@@ -177,7 +190,7 @@ export const RowIconsWrapper = styled.div`
 
 export const RowIcon = styled.p<IconProps>`
     display: ${props => props.isBlock ? "block" : "none"};
-    color:#c8ccd4 ;
+    color:${Colors.lightGray} ;
     margin: 0;
     transition: .3s;
     &:hover{

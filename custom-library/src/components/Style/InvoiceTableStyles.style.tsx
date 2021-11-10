@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import { InvoiceProps, RowProps } from "../Props"
+import { Colors } from "./InvoicesStyles.style"
 
 export const Table = styled.table`
   width: 100%;
@@ -12,7 +13,7 @@ export const Table = styled.table`
 
 `
 export const TableHead = styled.thead`
-  border: 1px solid #b4bed5;
+  border: 1px solid ${Colors.lightGray};
   background-color: white;
 `
 
@@ -30,7 +31,7 @@ export const TableRow = styled.tr<RowProps>`
 `
 export const TableHeader = styled.th`
   text-transform: uppercase;
-  color: #b4bed5;
+  color: ${Colors.lightGray};
   padding: 5px;
   font-size: 13px;
   font-weight: 700;

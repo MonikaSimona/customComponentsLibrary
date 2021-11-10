@@ -1,8 +1,8 @@
 import axios from 'axios'
 import React, { useEffect, useMemo, useState } from 'react'
-import Select, { OptionProps } from 'react-select';
+import Select from 'react-select';
 import { useTable } from 'react-table';
-import { Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, NumberOfInvoice, PageHeader, PageHeading, PageHeadingWrapper, RowIcon, RowIconsWrapper, SelectOptionImg, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, SelectWrapper, StatusIndicator, TabButton, TabButtonsWrapper, } from './Style/InvoicesStyles.style';
+import { Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, NumberOfInvoice, PageHeader, PageHeading, PageHeadingWrapper, RowIcon, RowIconsWrapper, SelectOptionImg, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, SelectWrapper, TabButton, TabButtonsWrapper, } from './Style/InvoicesStyles.style';
 import { CgFileDocument } from 'react-icons/cg'
 import { BsFunnel, BsArchive } from 'react-icons/bs'
 import { CgCloseO } from 'react-icons/cg'
@@ -15,13 +15,22 @@ import { IoMdClose } from 'react-icons/io';
 import { AiOutlineFileAdd } from 'react-icons/ai';
 import { TableRow, Table, TableBody, TableData, TableHead, TableHeader, EmptyCell, CellStatusIndicator } from './Style/InvoiceTableStyles.style';
 import { DateInput, ErrorMessage, Form, FormHeading, FormWrapper, Input, InputSufix, InputWrapper, Label, SubmitButton } from './Style/InvoiceFormStyles.style';
-import { Controller, useForm, useFormState, useWatch } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { ApproverData, InvoiceData, Options, SupplierData } from './Props';
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { v4 as uuid } from "uuid"
 
 interface Props {
+}
+export const formatSupplierOptionLabel = (props: Options) => {
+
+    return <SelectOptionWrapper>
+        <SelectOptionInitial  >
+            {props.customAbbreviation}
+        </SelectOptionInitial>
+        <SelectOptionText>{props.label}</SelectOptionText>
+    </SelectOptionWrapper>
 }
 
 const Invoices = (props: Props) => {
@@ -33,6 +42,7 @@ const Invoices = (props: Props) => {
     const [approverOptions, setApproverOptions] = useState<Options[]>([])
     const [supplierOptions, setSupplierOptions] = useState<Options[]>([])
     const [invoiceStatus, setInvoiceStatus] = useState("")
+    const [statusLenghts, setStatusLenghts] = useState({ numberNew: 0, numberRecorded: 0, numberApproved: 0, numberPaid: 0 })
 
     const { visible, toggle } = useModal();
 
@@ -42,10 +52,20 @@ const Invoices = (props: Props) => {
             const data = response.data;
             if (url === "posts") {
                 setFilteredInvoiceData(data)
+                const numberNew: number = _.filter(data, { status: "new" }).length;
+                const numberRecorded: number = _.filter(data, { status: "recorded" }).length;
+                const numberApproved: number = _.filter(data, { status: "approved" }).length;
+                const numberPaid: number = _.filter(data, { status: "paid" }).length;
+                setStatusLenghts({
+                    numberNew,
+                    numberRecorded,
+                    numberApproved,
+                    numberPaid
+                })
+
                 setInvoiceData(data);
 
             } else if (url === "suppliers") {
-
                 const temp2: Options[] = []
                 data.forEach((data: any) => {
                     const obj = {
@@ -58,9 +78,7 @@ const Invoices = (props: Props) => {
                 setSupplierOptions(temp2); //getting data for the select option menu
                 setSupplierData(data) // getting raw supplier data
             } else {
-
                 const temp1: Options[] = []
-                // console.log("PREV DATA", data)
 
                 data.forEach((data: any) => {
                     const obj = {
@@ -70,22 +88,29 @@ const Invoices = (props: Props) => {
                     }
                     temp1.push(obj)
                 })
-                // console.log("POST DATA", temp1)
                 setApproverOptions(temp1); //getting data for the select option menu
-
                 setApproverData(data) // getting raw approver data
             }
         }
     }
 
     useEffect(() => {
+        getData("approvers");
         getData("posts");
         getData("suppliers");
-        getData("approvers");
 
     }, [])
 
 
+    useEffect(() => {
+        const forFilter = [...invoiceData];
+        const invoicesStatus = _.filter(forFilter, { status: `${invoiceStatus}` })
+
+        setFilteredInvoiceData(invoicesStatus)
+
+    }, [invoiceStatus])
+
+    const ggg = 4;
     const newInvoice = (formData: InvoiceData) => {
         let newInvoice: any;
         const approverName = formData?.approver;
@@ -103,7 +128,6 @@ const Invoices = (props: Props) => {
         _.set(newInvoice, 'due_date', duedate);
         _.set(newInvoice, 'invoice_date', invoicedate);
         _.set(newInvoice, 'status', "new");
-        console.log("NEW INVOICE CREATED", newInvoice)
 
         axios.post("http://localhost:3000/posts", newInvoice, {
             headers: {
@@ -111,10 +135,8 @@ const Invoices = (props: Props) => {
             }
         }
         ).then((response) => {
-            // window.location.reload();
             getData("posts");
 
-            // console.log(response);
         })
             .catch((err) => console.log(err))
     }
@@ -122,42 +144,19 @@ const Invoices = (props: Props) => {
     const deleteInvoice = (id: string) => {
         axios.delete(`http://localhost:3000/posts/${id}`)
             .then(res => {
-                // window.location.reload(); 
                 getData("posts");
-                // console.log(res)
             })
             .catch(err => console.log(err))
     }
-    const formatOptionLabel = (props: Options) => (
-        <SelectOptionWrapper>
+    const formatOptionLabel = (props: Options) => {
+        return <SelectOptionWrapper>
             <SelectOptionImg src={props.customAbbreviation} alt="" />
             <SelectOptionText>{props.label}</SelectOptionText>
         </SelectOptionWrapper>
-    )
-    const formatSupplierOptionLabel = (props: Options) => (
-        <SelectOptionWrapper>
-            <SelectOptionInitial  >
-                {props.customAbbreviation}
-            </SelectOptionInitial>
-            <SelectOptionText>{props.label}</SelectOptionText>
-        </SelectOptionWrapper>
-    )
+    }
+
 
     //REACT-TABLE
-    // const invoicesStatusNew = useMemo(() => _.filter(invoiceData, { "status": "new" }), [])
-
-
-
-    useEffect(() => {
-        console.log("INVOICE STATUS", invoiceStatus)
-        const forFilter = [...invoiceData];
-        const invoicesStatus = _.filter(forFilter, { status: `${invoiceStatus}` })
-
-        setFilteredInvoiceData(invoicesStatus)
-        console.log("NEW INVOICES", invoicesStatus)
-
-    }, [invoiceStatus])
-
     const invoices = useMemo(() => [...filteredInvoiceData], [filteredInvoiceData])
     const invoicesColumns: any = useMemo(() => filteredInvoiceData[0] ? Object.keys(filteredInvoiceData[0]).filter((key) => key !== "random").map((key) => {
         if (key === "approver") {
@@ -168,14 +167,18 @@ const Invoices = (props: Props) => {
                 Cell: (value: any) => {
                     const approver: ApproverData = value.cell.value;
                     const defVal: any | undefined = _.find(approverOptions, { label: approver && approver.name })
-
                     return <SelectWrapper onClick={(e) => { e.stopPropagation(); }}>
                         <Select
-                            defaultValue={defVal} formatOptionLabel={formatOptionLabel} options={approverOptions} isSearchable={false} />
+                            key={defVal}
+                            defaultValue={defVal} formatOptionLabel={formatOptionLabel} options={approverOptions && approverOptions} isSearchable={false} />
                     </SelectWrapper>
+
+
                 },
 
             }
+
+
         }
         var headerKey = key;
         if (headerKey.includes("_")) {
@@ -201,7 +204,7 @@ const Invoices = (props: Props) => {
             return {
                 Header: headerKey,
                 accessor: "invoice_date",
-                Cell: (value: any) => { console.log("Value", value.cell.row.values); return <TableData> <CellStatusIndicator status={value.cell.row.values.status} /> {value.cell.row.values.invoice_date}</TableData> },
+                Cell: (value: any) => { return <TableData> <CellStatusIndicator status={value.cell.row.values.status} /> {value.cell.row.values.invoice_date}</TableData> },
 
             }
         }
@@ -256,7 +259,6 @@ const Invoices = (props: Props) => {
 
 
     const onSubmit = (data: InvoiceData) => {
-        console.log("FORM DATA", data);
         newInvoice(data);
         reset();
         //reseting the selects
@@ -371,12 +373,11 @@ const Invoices = (props: Props) => {
                 </PageHeader>
 
                 <TabButtonsWrapper>
-                    <TabButton status="new" onClick={() => setInvoiceStatus("new")} active={invoiceStatus === "new"} >New<NumberOfInvoice>({7})</NumberOfInvoice></TabButton>
-                    <TabButton status="recorded" onClick={() => setInvoiceStatus("recorded")} active={invoiceStatus === "recorded"} >Recorded<NumberOfInvoice>({4})</NumberOfInvoice></TabButton>
-                    <TabButton status="approved" onClick={() => setInvoiceStatus("approved")} active={invoiceStatus === "approved"} >Approved<NumberOfInvoice>({2})</NumberOfInvoice></TabButton>
-                    <TabButton status="paid" onClick={() => setInvoiceStatus("paid")} active={invoiceStatus === "paid"} >Paid<NumberOfInvoice>({1})</NumberOfInvoice></TabButton>
+                    <TabButton status="new" onClick={() => setInvoiceStatus("new")} active={invoiceStatus === "new"} >New<NumberOfInvoice>({statusLenghts.numberNew})</NumberOfInvoice></TabButton>
+                    <TabButton status="recorded" onClick={() => setInvoiceStatus("recorded")} active={invoiceStatus === "recorded"} >Recorded<NumberOfInvoice>({statusLenghts.numberRecorded})</NumberOfInvoice></TabButton>
+                    <TabButton status="approved" onClick={() => setInvoiceStatus("approved")} active={invoiceStatus === "approved"} >Approved<NumberOfInvoice>({statusLenghts.numberApproved})</NumberOfInvoice></TabButton>
+                    <TabButton status="paid" onClick={() => setInvoiceStatus("paid")} active={invoiceStatus === "paid"} >Paid<NumberOfInvoice>({statusLenghts.numberPaid})</NumberOfInvoice></TabButton>
                 </TabButtonsWrapper>
-
                 <Table {...getTableProps()}>
                     <TableHead>
                         {headerGroups.map((headerGroup) => (
@@ -394,7 +395,7 @@ const Invoices = (props: Props) => {
                             prepareRow(row);
                             return <TableRow isHeader={false} {...row.getRowProps}
                                 onClick={() => {
-                                    const dataToPass = _.set(row.values, 'options', approverOptions);
+                                    const dataToPass = _.set(row.values, 'options', { approverOptions, supplierOptions });
                                     history.push("/details", dataToPass)
                                 }}>
                                 {row.cells.map((cell, index) => (
@@ -404,6 +405,7 @@ const Invoices = (props: Props) => {
                         })}
                     </TableBody>
                 </Table>
+
             </Container>
         </>
     )

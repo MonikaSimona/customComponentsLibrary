@@ -28,19 +28,6 @@
     },
     {
       "approver": {
-        "name": "Louis Pignet",
-        "imgUrl": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
-      },
-      "total": 2000,
-      "invoice_number": "10002",
-      "due_date": "04/11/2021",
-      "supplier": "Sabrina paire",
-      "invoice_date": "19/11/2021",
-      "id": "7b98fe58-e6b2-4458-a6fc-b5ebc53414ae",
-      "status": "new"
-    },
-    {
-      "approver": {
         "name": "John Smith",
         "imgUrl": "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80"
       },
