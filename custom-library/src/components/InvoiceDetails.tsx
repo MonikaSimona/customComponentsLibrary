@@ -1,30 +1,45 @@
 import React, { useEffect, useState } from 'react'
-import { MdOutlineArrowBackIosNew, MdOutlineRefresh } from 'react-icons/md'
+import { MdArrowDropDown, MdOutlineArrowBackIosNew, MdOutlineRefresh } from 'react-icons/md'
 import { BiStoreAlt } from 'react-icons/bi'
 import { CgCloseO, CgFileDocument } from 'react-icons/cg'
 import { AiOutlineFileSync, AiOutlineSave } from 'react-icons/ai'
 import Select from 'react-select'
 import _ from "lodash";
-import { BackButton, Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, PageHeader, PageHeading, PageHeadingWrapper, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, StatusIndicator } from './Style/InvoicesStyles.style'
-import { ApproverImage, BigButton, Company, CompanyBillingAmount, CompanyInfo, CompanyInitial, CompanyName, InvoiceDate, DateWrapper, DetailsHeader, DetailsSection, FormRow, InvoiceDocumentPanel, InvoiceInfo, InvoiceInfoContainer, InvoiceInfoPanel, SectionHeading, Sub, SupplierInfo, Title, VerticalDivider } from './Style/InvoiceDetailsStyles.style'
-import { Options } from './Props'
-import { Form, Input, InputSufix, InputWrapper, Label } from './Style/InvoiceFormStyles.style'
+import { BackButton, Colors, Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, PageHeader, PageHeading, PageHeadingWrapper, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, StatusIndicator } from './Style/InvoicesStyles.style'
+import { ApproverImage, BigButton, Company, CompanyBillingAmount, CompanyInfo, CompanyInitial, CompanyName, InvoiceDate, DateWrapper, DetailsHeader, DetailsSection, FormRow, InvoiceDocumentPanel, InvoiceInfo, InvoiceInfoContainer, InvoiceInfoPanel, SectionHeading, Sub, SupplierInfo, Title, VerticalDivider, LinkButton } from './Style/InvoiceDetailsStyles.style'
+import { InvoiceData, Options } from './Props'
+import { ErrorMessage, Form, FormHeading, FormWrapper, Input, InputSufix, InputWrapper, Label, SubmitButton } from './Style/InvoiceFormStyles.style'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { formatSupplierOptionLabel } from './Invoices'
+import { formatSupplierOptionLabel, boxSelectTheme, selectStyles } from './Invoices'
 import { Col, Row } from '../customCumponents/Layout/Grid.styled'
-import { useLocation } from 'react-router'
+import { useHistory, useLocation } from 'react-router'
+import axios from 'axios'
+import useModal from '../customCumponents/Modal/useModal'
+import Modal from '../customCumponents/Modal/Modal'
+import { IoMdClose } from 'react-icons/io'
+import { v4 as uuid } from "uuid"
 
 
 interface Props {
-    history: any;
 
 }
 
+export const currencyOptions = [{
+    value: "dollar",
+    label: "$ United States Dollar"
+},
+{
+    value: "euro",
+    label: "€ Euro"
+}]
+
 const InvoiceDetails = (props: Props) => {
+    const history = useHistory();
     const location = useLocation();
     const invoiceData: any = location.state;
+    const totalAmount = invoiceData.total.toLocaleString();
     var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const stringDate = invoiceData.due_date.split("/");
     const month = months[stringDate[1] - 1];
@@ -35,236 +50,357 @@ const InvoiceDetails = (props: Props) => {
     const defInvoiceDate = invoiceData.invoice_date.split("/")[2] + "-" + invoiceData.invoice_date.split("/")[1] + "-" + invoiceData.invoice_date.split("/")[0]
     const defDueDate = invoiceData.due_date.split("/")[2] + "-" + invoiceData.due_date.split("/")[1] + "-" + invoiceData.due_date.split("/")[0]
 
+    const [statusState, setStatusState] = useState("")
+
+    const { toggle, visible } = useModal()
+
+
+    const currency = invoiceData.currency === "usd" ? "$" : "€";
+    const currencyInvert = invoiceData.currency === "usd" ? "€" : "$";
+
+
+    const convertCurrency = (currencyToConv: number) => {
+        if (currency === "$") {
+            return currencyToConv * 0.7579;
+        } else {
+            return currencyToConv * 1.3194;
+        }
+    }
+
+
+
+    const editInvoice = (dataToEdit: any, id: string) => {
+        axios.patch(`http://localhost:3000/posts/${id}`, dataToEdit, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }
+        ).then((response) => {
+            console.log(response)
+        })
+            .catch((err) => console.log(err))
+    }
+
+
     const formatOptionLabel = (props: Options) => (
 
         <SelectOptionText>{props.label}</SelectOptionText>
 
     )
+
     useEffect(() => {
-        // console.log(invoiceData)
-    }, [])
+        console.log(statusState)
+        if (statusState) {
+            editInvoice({ status: statusState }, invoiceData.id)
+
+        }
+    }, [statusState])
+
     const schema = yup.object().shape({
-        invoice_date: yup.string().required("Must provide invoice date"),
-        supplier: yup.string().required("Must choose supplier"),
-        due_date: yup.string().required("Must provide due date"),
-        invoice_number: yup.string().required("Must provide invoice number"),
-        total: yup.number().typeError("Total should be number").required("Must total amount"),
-        approver: yup.string().required("Must choose approver")
+        company_name: yup.string(),
+        invoice_date: yup.string(),
+        supplier: yup.string(),
+        due_date: yup.string(),
+        invoice_number: yup.string(),
+        total: yup.string(),
+        approver: yup.string()
     })
-    const { register, handleSubmit, control, reset, formState: { errors }, setValue, } = useForm({
+    const { register, handleSubmit, control, reset, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
+    const onSubmit = (data: InvoiceData) => {
+        console.log("DATA", data)
+        console.log("ERRORS", errors)
+        console.log("WATCH", watch)
+        // editInvoice(data);
+        // history.goBack();
+
+    }
+    const onNewSupplierSubmit = (data: any) => {
+        console.log("DATA Supplier", data.company_name)
+        const newSupplier = { id: uuid, name: data.company_name }
+        axios.post("http://localhost:3000/suppliers", newSupplier,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+        ).then((response) => {
+
+
+        })
+            .catch((err) => console.log(err))
+
+        reset();
+        console.log("ERRORS Supplier", errors)
+        console.log("WATCH Supplier", watch)
+        supplierOptions.push(
+            {
+                label: data.company_name,
+                value: data.company_name.split(" ")[0].toLowerCase(), customAbbreviation: data.company_name.split("")[0].toUpperCase()
+            })
+    }
 
 
     return (
-        <Container>
-            <BackButton onClick={() => { props.history.goBack() }}><MdOutlineArrowBackIosNew /> Back </BackButton>
-            <PageHeader>
-                <PageHeadingWrapper>
-                    <HeadingIconWrapper>
-                        <CgFileDocument />
-                    </HeadingIconWrapper>
-                    <PageHeading>
-                        Invoice
-                    </PageHeading>
-                    <StatusIndicator status={invoiceData.status} >{invoiceData.status}</StatusIndicator>
-                </PageHeadingWrapper>
-                <HeaderButtonsWrapper>
-                    <HeaderButton>
-                        <AiOutlineFileSync className="icon icon-gray" />
-                        Ask for a credit note
-                    </HeaderButton>
-                    <HeaderButton isReject>
-                        <CgCloseO className="icon" />
-                        Reject the invoice
-                    </HeaderButton>
-                    <HeaderButton isRecord>
-                        <AiOutlineSave className="icon" />
-                        Record invoice
-                    </HeaderButton>
-                    <HeaderButton isRecord isApprove> <AiOutlineSave className="icon" />
-                        Record and Approve
-                    </HeaderButton>
-                </HeaderButtonsWrapper>
-            </PageHeader>
-            <DetailsHeader>
-                <DetailsSection first>
-                    <Company>
-                        <CompanyInitial>
-                            {invoiceData.supplier.charAt(0)}
-                        </CompanyInitial>
-                        <CompanyInfo>
-                            <CompanyName>
-                                {invoiceData.supplier}
-                            </CompanyName>
-                            <CompanyBillingAmount>
-                                {invoiceData.total} $  <Sub>
-                                    Tax inclusive
-                                </Sub>
-                            </CompanyBillingAmount>
-                        </CompanyInfo>
-                    </Company>
-                    <HeaderButton>
-                        <MdOutlineRefresh className="icon icon-gray" /> Invoice History
-                    </HeaderButton>
-                </DetailsSection>
-                <VerticalDivider />
-                <DetailsSection>
-                    <DateWrapper>
-                        <SectionHeading>
-                            Due date
-                        </SectionHeading>
-                        <InvoiceDate>
-                            {stringDate[0]} {month} {stringDate[2]}
-                        </InvoiceDate>
-                    </DateWrapper>
-                </DetailsSection>
-                <VerticalDivider />
-                <DetailsSection>
-                    <Company>
-                        <ApproverImage src={selectedApprover ? selectedApprover?.customAbbreviation : invoiceData.approver.imgUrl} />
-                        <CompanyInfo>
-                            <SectionHeading>
-                                Approver
-                            </SectionHeading>
-                            <Select options={approverOptions} formatOptionLabel={formatOptionLabel} defaultValue={_.find(approverOptions, { label: invoiceData.approver.name })}
-                                onChange={(selected) => {
-                                    console.log(selected);
-                                    selected && setSelectedApprover(selected)
-                                }} />
-                        </CompanyInfo>
-                    </Company>
-                </DetailsSection>
-            </DetailsHeader>
-            <InvoiceInfoContainer>
-                <InvoiceDocumentPanel>
-                </InvoiceDocumentPanel>
-                <InvoiceInfoPanel>
-                    <Form>
-                        <Title>
-                            Supplier information
-                        </Title>
-                        <SupplierInfo>
-                            <FormRow  >
-                                <Col md={6} >
-                                    <Label>Company name</Label>
-                                    <Controller control={control} render={({ field: { onChange, value, name, ref } }) => (
-                                        <Select
-                                            key={`supplier${value && value.label}`}
-                                            ref={ref}
-                                            value={_.find(supplierOptions, (c) => c.value === value)}
-                                            defaultValue={_.find(supplierOptions, { label: invoiceData.supplier })}
-                                            name={name}
-                                            options={supplierOptions}
-                                            formatOptionLabel={formatSupplierOptionLabel}
-                                            onChange={(selectedOption: any): any => {
-                                                return onChange(selectedOption.label)
-                                            }}
-                                        />
-                                    )} name={"supplier"} rules={{ required: true }} />
-                                </Col>
-                                <Col md={6}   >
-                                    <BigButton onClick={(e) => { e.preventDefault() }}> <BiStoreAlt /> Supplier record </BigButton>
-                                </Col>
-                            </FormRow>
-                            <FormRow >
-                                <Col md={7} pLGy={15}>
-                                    <Label>IBAN</Label>
+        <>
+            <Modal visible={visible} toggle={toggle} closeButtonElement={<IoMdClose />}>
+                <FormWrapper>
+                    <Form onSubmit={handleSubmit(onNewSupplierSubmit)}>
+                        <FormHeading>
+                            Add new supplier
+                        </FormHeading>
+                        <Label>
+                            Company name
+                        </Label>
+                        <InputWrapper>
+                            <Input {...register("company_name")} type="text" />
+                        </InputWrapper>
+                        <ErrorMessage>{errors.company_name?.message}</ErrorMessage>
 
-                                    <InputWrapper>
-                                        <Input type="text" {...register("iban")} />
-                                    </InputWrapper>
-                                </Col>
-                                <Col md={5}>
-                                    <Label>SWIFT/BIC</Label>
+                        <SubmitButton type="submit">Add supplier</SubmitButton>
 
-                                    <InputWrapper>
-                                        <Input type="text" {...register("swift/bic")} />
-                                    </InputWrapper>
-
-                                </Col>
-                            </FormRow>
-
-                        </SupplierInfo>
-                        <InvoiceInfo>
-                            <Title>
-                                Invoice information
-                            </Title>
-                            <FormRow>
-                                <Col md={4}>
-                                    <Label>Billing date</Label>
-                                    <InputWrapper>
-                                        <Input type="date" {...register("invoice_date")} defaultValue={defInvoiceDate} />
-                                    </InputWrapper>
-                                </Col>
-                                <Col md={4}>
-                                    <Label>Due date</Label>
-                                    <InputWrapper>
-                                        <Input type="date" {...register("due_date")} defaultValue={defDueDate} />
-                                    </InputWrapper>
-                                </Col>
-                                <Col md={4}>
-                                    <Label>Invoice number</Label>
-                                    <InputWrapper>
-                                        <Input type="text" {...register("invoice_number")} defaultValue={invoiceData.invoice_number} />
-                                    </InputWrapper>
-                                </Col>
-                            </FormRow>
-                            <FormRow>
-                                <Col md={4}>
-                                    <Label>Amount incl.tax</Label>
-                                    <InputWrapper>
-                                        <Input type="text" {...register("amount_tax")} />
-                                        <InputSufix>$</InputSufix>
-                                    </InputWrapper>
-                                </Col>
-                                <Col md={4}>
-                                    <Label>Amount excluding tax</Label>
-                                    <InputWrapper>
-                                        <Input type="text" {...register("amount_no_tax")} />
-                                        <InputSufix>$</InputSufix>
-                                    </InputWrapper>
-                                </Col>
-                                <Col md={4}>
-                                    <Label>Invoice number</Label>
-                                    <Controller control={control} render={({ field: { onChange, value, name, ref } }) => (
-                                        <Select
-                                            key={`supplier${value && value.label}`}
-                                            ref={ref}
-                                            value={_.find(supplierOptions, (c) => c.value === value)}
-                                            name={name}
-                                            options={supplierOptions}
-                                            formatOptionLabel={formatSupplierOptionLabel}
-                                            onChange={(selectedOption: any): any => {
-                                                return onChange(selectedOption.label)
-                                            }}
-                                        />
-                                    )} name={"supplier"} rules={{ required: true }} />
-                                </Col>
-                            </FormRow>
-                            <FormRow>
-                                <Col md={4}>
-                                    <Label>Converted amount incl.tax</Label>
-                                    <InputWrapper>
-                                        <Input type="text" {...register("conv_amount_tax")} />
-                                        <InputSufix>€</InputSufix>
-                                    </InputWrapper>
-                                </Col>
-                                <Col md={4}>
-                                    <Label>Converted amount excl.tax</Label>
-                                    <InputWrapper>
-                                        <Input type="text" {...register("conv_amount_no_tax")} />
-                                        <InputSufix>€</InputSufix>
-                                    </InputWrapper>
-                                </Col>
-                                <Col md={4}></Col>
-
-                            </FormRow>
-                        </InvoiceInfo>
                     </Form>
-                </InvoiceInfoPanel>
-            </InvoiceInfoContainer>
-        </Container>
+                </FormWrapper>
+            </Modal>
+
+
+            <Container>
+
+                <BackButton onClick={() => { history.goBack() }}><MdOutlineArrowBackIosNew /> Back </BackButton>
+                <Form onSubmit={handleSubmit(onSubmit)}>
+                    <PageHeader>
+                        <PageHeadingWrapper>
+                            <HeadingIconWrapper>
+                                <CgFileDocument />
+                            </HeadingIconWrapper>
+                            <PageHeading>
+                                Invoice
+                            </PageHeading>
+                            <StatusIndicator status={statusState ? statusState : invoiceData.status} >{statusState ? statusState : invoiceData.status}</StatusIndicator>
+                        </PageHeadingWrapper>
+                        <HeaderButtonsWrapper>
+                            <HeaderButton>
+                                <AiOutlineFileSync className="icon icon-gray" />
+                                Ask for a credit note
+                            </HeaderButton>
+                            <HeaderButton isReject>
+                                <CgCloseO className="icon" />
+                                Reject the invoice
+                            </HeaderButton>
+                            <HeaderButton type="button" isRecord onClick={() => setStatusState("recorded")} disabled={invoiceData.status === "recorded" || invoiceData.status === "approved"}>
+                                <AiOutlineSave className="icon" />
+                                Record invoice
+                            </HeaderButton>
+                            <HeaderButton type="button" isRecord isApprove onClick={() => setStatusState("approved")} disabled={invoiceData.status === "approved"} > <AiOutlineSave className="icon" />
+                                Record and Approve
+                            </HeaderButton>
+                        </HeaderButtonsWrapper>
+                    </PageHeader>
+                    <DetailsHeader>
+                        <DetailsSection first>
+                            <Company>
+                                <CompanyInitial>
+                                    {invoiceData.supplier.charAt(0)}
+                                </CompanyInitial>
+                                <CompanyInfo>
+                                    <CompanyName>
+                                        {invoiceData.supplier}
+                                    </CompanyName>
+                                    <CompanyBillingAmount>
+                                        {invoiceData.total.toLocaleString()} {currency}  <Sub>
+                                            Tax inclusive
+                                        </Sub>
+                                    </CompanyBillingAmount>
+                                </CompanyInfo>
+                            </Company>
+                            <HeaderButton>
+                                <MdOutlineRefresh className="icon icon-gray" /> Invoice History
+                            </HeaderButton>
+                        </DetailsSection>
+                        <VerticalDivider />
+                        <DetailsSection>
+                            <DateWrapper>
+                                <SectionHeading>
+                                    Due date
+                                </SectionHeading>
+                                <InvoiceDate>
+                                    {stringDate[0]} {month} {stringDate[2]}
+                                </InvoiceDate>
+                            </DateWrapper>
+                        </DetailsSection>
+                        <VerticalDivider />
+                        <DetailsSection>
+                            <Company>
+                                <ApproverImage src={selectedApprover ? selectedApprover?.customAbbreviation : invoiceData.approver.imgUrl} />
+                                <CompanyInfo>
+                                    <SectionHeading>
+                                        Approver
+                                    </SectionHeading>
+                                    <Controller control={control} render={({ field: { onChange, value, name, ref } }) => (
+                                        <Select
+                                            key={`approver${value && value.label}`}
+                                            ref={ref}
+                                            name={name}
+                                            options={approverOptions}
+                                            formatOptionLabel={formatOptionLabel}
+                                            defaultValue={_.find(approverOptions, { label: invoiceData.approver.name })}
+                                            onChange={(selected) => {
+                                                selected && setSelectedApprover(selected)
+                                            }}
+                                            components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
+                                            styles={selectStyles}
+                                            theme={boxSelectTheme}
+
+                                        />
+                                    )} name={"approver"} />
+
+                                </CompanyInfo>
+                            </Company>
+                        </DetailsSection>
+                    </DetailsHeader>
+                    <InvoiceInfoContainer>
+                        <InvoiceDocumentPanel>
+                        </InvoiceDocumentPanel>
+                        <InvoiceInfoPanel>
+                            <PageHeader>
+                                <Title>
+                                    Supplier information
+                                </Title>
+                                <LinkButton type="button" onClick={toggle}>+ Add a new supplier</LinkButton>
+
+                            </PageHeader>
+                            <SupplierInfo>
+                                <FormRow  >
+                                    <Col md={6} >
+                                        <Label>Company name</Label>
+                                        <Controller control={control} render={({ field: { onChange, value, name, ref } }) => (
+                                            <Select
+                                                key={`supplier${value && value.label}`}
+                                                ref={ref}
+                                                value={_.find(supplierOptions, (c) => c.value === value)}
+                                                defaultValue={_.find(supplierOptions, { label: invoiceData.supplier })}
+                                                name={name}
+                                                options={supplierOptions}
+                                                formatOptionLabel={formatSupplierOptionLabel}
+                                                onChange={(selectedOption: any): any => {
+                                                    return onChange(selectedOption.label)
+                                                }}
+                                                components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
+                                                theme={boxSelectTheme}
+                                            />
+                                        )} name={"supplier"} rules={{ required: true }} />
+                                    </Col>
+                                    <Col md={6}   >
+                                        <BigButton onClick={(e) => { e.preventDefault() }}> <BiStoreAlt /> Supplier record </BigButton>
+                                    </Col>
+                                </FormRow>
+                                <FormRow >
+                                    <Col md={7} pLGy={15}>
+                                        <Label>IBAN</Label>
+
+                                        <InputWrapper>
+                                            <Input type="text" {...register("iban")} />
+                                        </InputWrapper>
+                                    </Col>
+                                    <Col md={5}>
+                                        <Label>SWIFT/BIC</Label>
+
+                                        <InputWrapper>
+                                            <Input type="text" {...register("swift/bic")} />
+                                        </InputWrapper>
+
+                                    </Col>
+                                </FormRow>
+
+                            </SupplierInfo>
+                            <InvoiceInfo>
+                                <Title>
+                                    Invoice information
+                                </Title>
+                                <FormRow>
+                                    <Col md={4}>
+                                        <Label>Billing date</Label>
+                                        <InputWrapper>
+                                            <Input type="date" {...register("invoice_date")} defaultValue={defInvoiceDate} />
+                                        </InputWrapper>
+                                    </Col>
+                                    <Col md={4}>
+                                        <Label>Due date</Label>
+                                        <InputWrapper>
+                                            <Input type="date" {...register("due_date")} defaultValue={defDueDate} />
+                                        </InputWrapper>
+                                    </Col>
+                                    <Col md={4}>
+                                        <Label>Invoice number</Label>
+                                        <InputWrapper>
+                                            <Input type="text" {...register("invoice_number")} defaultValue={invoiceData.invoice_number} />
+                                        </InputWrapper>
+                                    </Col>
+                                </FormRow>
+                                <FormRow>
+                                    <Col md={4}>
+                                        <Label>Amount incl.tax</Label>
+                                        <InputWrapper>
+                                            <Input type="text" {...register("amount_tax")} defaultValue={invoiceData.total} />
+                                            <InputSufix>{currency}</InputSufix>
+                                        </InputWrapper>
+                                    </Col>
+                                    <Col md={4}>
+                                        <Label>Amount excluding tax</Label>
+                                        <InputWrapper>
+                                            <Input type="text" {...register("amount_no_tax")} defaultValue={invoiceData.total} />
+                                            <InputSufix>{currency}</InputSufix>
+                                        </InputWrapper>
+                                    </Col>
+                                    <Col md={4}>
+                                        <Label>Currency</Label>
+                                        <Controller control={control} render={({ field: { onChange, value, name, ref } }) => (
+                                            <Select
+                                                key={`currency${value && value.label}`}
+                                                ref={ref}
+                                                value={_.find(currencyOptions, (c) => c.value === value)}
+                                                defaultValue={currencyOptions[currency === "$" ? 0 : 1]}
+
+                                                name={name}
+                                                options={currencyOptions}
+                                                onChange={(selectedOption: any): any => {
+                                                    return onChange(selectedOption.label)
+                                                }}
+                                                components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
+
+                                                theme={boxSelectTheme}
+                                            />
+                                        )} name={"currency"} rules={{ required: true, }} />
+                                    </Col>
+                                </FormRow>
+                                <FormRow>
+                                    <Col md={4}>
+                                        <Label>Converted amount incl.tax</Label>
+                                        <InputWrapper>
+                                            <Input type="text" {...register("conv_amount_tax")} defaultValue={convertCurrency(invoiceData.total).toLocaleString()} />
+                                            <InputSufix>{currencyInvert}</InputSufix>
+                                        </InputWrapper>
+                                    </Col>
+                                    <Col md={4}>
+                                        <Label>Converted amount excl.tax</Label>
+                                        <InputWrapper>
+                                            <Input type="text" {...register("conv_amount_no_tax")} defaultValue={convertCurrency(invoiceData.total).toLocaleString()} />
+                                            <InputSufix>{currencyInvert}</InputSufix>
+                                        </InputWrapper>
+                                    </Col>
+
+                                    <Col md={4}>
+                                        <SubmitButton edit type="submit">Edit invoice</SubmitButton>
+                                    </Col>
+
+                                </FormRow>
+                            </InvoiceInfo>
+                        </InvoiceInfoPanel>
+                    </InvoiceInfoContainer>
+                </Form>
+            </Container>
+        </>
     )
 }
 

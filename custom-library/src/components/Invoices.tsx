@@ -2,7 +2,7 @@ import axios from 'axios'
 import React, { useEffect, useMemo, useState } from 'react'
 import Select from 'react-select';
 import { useTable } from 'react-table';
-import { Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, NumberOfInvoice, PageHeader, PageHeading, PageHeadingWrapper, RowIcon, RowIconsWrapper, SelectOptionImg, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, SelectWrapper, TabButton, TabButtonsWrapper, } from './Style/InvoicesStyles.style';
+import { Colors, Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, NumberOfInvoice, PageHeader, PageHeading, PageHeadingWrapper, RowIcon, RowIconsWrapper, SelectOptionImg, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, SelectWrapper, TabButton, TabButtonsWrapper, } from './Style/InvoicesStyles.style';
 import { CgFileDocument } from 'react-icons/cg'
 import { BsFunnel, BsArchive } from 'react-icons/bs'
 import { CgCloseO } from 'react-icons/cg'
@@ -20,6 +20,8 @@ import { ApproverData, InvoiceData, Options, SupplierData } from './Props';
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { v4 as uuid } from "uuid"
+import { MdArrowDropDown } from 'react-icons/md';
+import { currencyOptions } from './InvoiceDetails';
 
 interface Props {
 }
@@ -31,6 +33,30 @@ export const formatSupplierOptionLabel = (props: Options) => {
         </SelectOptionInitial>
         <SelectOptionText>{props.label}</SelectOptionText>
     </SelectOptionWrapper>
+}
+export const boxSelectTheme = (theme: any) => {
+    return {
+        ...theme,
+        borderRadius: 0,
+    }
+
+}
+export const selectStyles = {
+    control: (provided: any) => ({
+        ...provided,
+        padding: 0,
+        border: "none",
+        width: 300
+    }),
+    option: (provided: any) => ({
+        ...provided,
+        width: 300
+    }),
+    container: (provided: any) => ({
+        ...provided,
+        width: 300
+    })
+
 }
 
 const Invoices = (props: Props) => {
@@ -110,7 +136,6 @@ const Invoices = (props: Props) => {
 
     }, [invoiceStatus])
 
-    const ggg = 4;
     const newInvoice = (formData: InvoiceData) => {
         let newInvoice: any;
         const approverName = formData?.approver;
@@ -160,7 +185,6 @@ const Invoices = (props: Props) => {
     const invoices = useMemo(() => [...filteredInvoiceData], [filteredInvoiceData])
     const invoicesColumns: any = useMemo(() => filteredInvoiceData[0] ? Object.keys(filteredInvoiceData[0]).filter((key) => key !== "random").map((key) => {
         if (key === "approver") {
-
             return {
                 Header: key,
                 accessor: key,
@@ -170,42 +194,41 @@ const Invoices = (props: Props) => {
                     return <SelectWrapper onClick={(e) => { e.stopPropagation(); }}>
                         <Select
                             key={defVal}
-                            defaultValue={defVal} formatOptionLabel={formatOptionLabel} options={approverOptions && approverOptions} isSearchable={false} />
+                            defaultValue={defVal} formatOptionLabel={formatOptionLabel} options={approverOptions && approverOptions} isSearchable={false}
+                            theme={boxSelectTheme}
+                            components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
+                            styles={selectStyles}
+                        />
                     </SelectWrapper>
-
-
                 },
-
             }
-
-
         }
         var headerKey = key;
         if (headerKey.includes("_")) {
             headerKey = headerKey.split("_")[0] + " " + headerKey.split("_")[1]
         }
-        if (key === "id") {
+        if (key === "id" || key === "status" || key === "currency") {
             return {
                 Header: "",
-                accessor: "id",
+                accessor: key,
                 Cell: ({ value }: any) => <EmptyCell></EmptyCell>,
 
             }
         }
-        if (key === "status") {
-            return {
-                Header: "",
-                accessor: "status",
-                Cell: ({ value }: any) => <EmptyCell></EmptyCell>,
 
-            }
-        }
         if (key === "invoice_date") {
             return {
                 Header: headerKey,
                 accessor: "invoice_date",
                 Cell: (value: any) => { return <TableData> <CellStatusIndicator status={value.cell.row.values.status} /> {value.cell.row.values.invoice_date}</TableData> },
 
+            }
+        }
+        if (key === "total") {
+            return {
+                Headers: key,
+                accessor: "total",
+                Cell: (value: any) => { return <TableData> {value.cell.row.values.total.toLocaleString()}  {value.cell.row.values.currency === "usd" ? "$" : "€"} </TableData> }
             }
         }
 
@@ -251,7 +274,8 @@ const Invoices = (props: Props) => {
         due_date: yup.string().required("Must provide due date"),
         invoice_number: yup.string().required("Must provide invoice number"),
         total: yup.number().typeError("Total should be number").required("Must total amount"),
-        approver: yup.string().required("Must choose approver")
+        approver: yup.string().required("Must choose approver"),
+        currency: yup.string().required("Must provide currency.")
     })
     const { register, handleSubmit, control, reset, formState: { errors }, setValue, getValues } = useForm({
         resolver: yupResolver(schema),
@@ -299,6 +323,8 @@ const Invoices = (props: Props) => {
                                 onChange={(selectedOption: any): any => {
                                     return onChange(selectedOption.label)
                                 }}
+                                theme={boxSelectTheme}
+                                components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
                             />
                         )} name={"supplier"} rules={{ required: true }} />
                         <ErrorMessage>{errors.supplier?.message}</ErrorMessage>
@@ -323,6 +349,25 @@ const Invoices = (props: Props) => {
                             <Input {...register("total")} type="text" placeholder="1000" />
                         </InputWrapper>
                         <ErrorMessage>{errors.total?.message}</ErrorMessage>
+                        <Label>Currency</Label>
+                        <Controller control={control} render={({ field: { onChange, value, name, ref } }) => (
+                            <Select
+                                key={`currency${value && value.label}`}
+                                ref={ref}
+                                value={_.find(currencyOptions, (c) => c.value === value)}
+                                defaultValue={currencyOptions[0]}
+
+                                name={name}
+                                options={currencyOptions}
+                                onChange={(selectedOption: any): any => {
+                                    return onChange(selectedOption.label)
+                                }}
+                                components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
+
+                                theme={boxSelectTheme}
+                            />
+                        )} name={"currency"} rules={{ required: true, }} />
+                        <ErrorMessage>{errors.currency?.message}</ErrorMessage>
                         <Label>
                             Approver
                         </Label>
@@ -338,10 +383,12 @@ const Invoices = (props: Props) => {
                                 onChange={(selectedOption: any): any => {
                                     return onChange(selectedOption.label)
                                 }}
+                                theme={boxSelectTheme}
+                                components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
                             />
                         )} name={"approver"} rules={{ required: true }} />
                         <ErrorMessage>{errors.approver?.message}</ErrorMessage>
-                        <SubmitButton type="submit">Create</SubmitButton>
+                        <SubmitButton type="submit">Create new</SubmitButton>
 
                     </Form>
                 </FormWrapper>

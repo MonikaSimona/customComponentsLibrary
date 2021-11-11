@@ -30,6 +30,7 @@ export interface InvoiceData {
     total: number;
     status: string;
     approver: ApproverData;
+    currency: string;
 
 }
 export interface SupplierData {
@@ -40,5 +41,9 @@ export interface Options {
     value: string;
     label: string;
     customAbbreviation: string;
+
+}
+export interface SubmitButtonProps {
+    edit?: boolean;
 
 }

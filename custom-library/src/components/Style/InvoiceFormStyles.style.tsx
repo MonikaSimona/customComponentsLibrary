@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { SubmitButtonProps } from "../Props";
 import { Colors } from "./InvoicesStyles.style";
 
 export const FormWrapper = styled.div`
@@ -72,18 +73,21 @@ export const DateInput = styled.input.attrs({
    
  
 `
-export const SubmitButton = styled.button`
-    width: 20%;
-    border: 1px solid ${Colors.lightGray};
+export const SubmitButton = styled.button<SubmitButtonProps>`
+    width: ${({ edit }) => edit ? '100%' : 'auto'};
     padding: 10px 15px;
-    color:black;
-    background-color: white;
+    border: 1px solid ${Colors.lightGray};
+ 
+    background-color: ${Colors.lightGray};
+        color: white;
     font-size: 16px;
     font-weight: 500;
     transition: 0.3s;
-    margin:20px auto 10px auto;
+    margin:${({ edit }) => !edit && '20px auto 10px auto'};
     &:hover{
-        background-color: ${Colors.lightGray};
+        color:black;
+    border: 1px solid ${Colors.lightGray};
+    background-color: white;
         cursor: pointer;
     }
 `

@@ -147,3 +147,14 @@ export const BigButton = styled.button`
     
 
 `
+export const LinkButton = styled.button`
+    background-color: transparent;
+    border: none;
+    color: #01589f;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+
+`
+
