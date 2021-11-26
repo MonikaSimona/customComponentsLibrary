@@ -154,6 +154,9 @@ const Invoices = (props: Props) => {
         _.set(newInvoice, 'invoice_date', invoicedate);
         _.set(newInvoice, 'status', "new");
 
+
+        console.log(newInvoice)
+
         axios.post("http://localhost:3000/posts", newInvoice, {
             headers: {
                 "Content-Type": "application/json",
@@ -360,7 +363,7 @@ const Invoices = (props: Props) => {
                                 name={name}
                                 options={currencyOptions}
                                 onChange={(selectedOption: any): any => {
-                                    return onChange(selectedOption.label)
+                                    return onChange(selectedOption.value)
                                 }}
                                 components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
 

@@ -33,42 +33,14 @@
         "name": "John Smith",
         "imgUrl": "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80"
       },
-      "total": 433.3,
+      "total": 600,
       "currency": "eur",
       "invoice_number": "SS-98",
-      "due_date": "04/11/2021",
+      "due_date": "2021-11-04",
       "supplier": "Sabrina paire",
-      "invoice_date": "12/11/2021",
+      "invoice_date": "2021-11-12",
       "id": "c015f76b-cf14-4035-a7d4-638faf3617f7",
       "status": "approved"
-    },
-    {
-      "approver": {
-        "name": "Louis Pignet",
-        "imgUrl": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
-      },
-      "total": 2000,
-      "currency": "eur",
-      "invoice_number": "123",
-      "due_date": "25/11/2021",
-      "supplier": "Sabrina paire",
-      "invoice_date": "24/11/2021",
-      "id": "4f6235bf-6431-4fec-8ddd-6a906fc5a947",
-      "status": "approved"
-    },
-    {
-      "currency": "€ Euro",
-      "approver": {
-        "name": "Louis Pignet",
-        "imgUrl": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
-      },
-      "total": 2000,
-      "invoice_number": "33334",
-      "due_date": "18/11/2021",
-      "supplier": "New Company",
-      "invoice_date": "01/11/2021",
-      "id": "4f75720d-89ac-4e6e-b0be-a50ebbdc08d3",
-      "status": "new"
     }
   ],
   "suppliers": [
@@ -95,6 +67,10 @@
     {
       "name": "Test Company",
       "id": "qq-kSmu"
+    },
+    {
+      "name": "Merkur",
+      "id": "RZwh_Bw"
     }
   ],
   "approvers": [

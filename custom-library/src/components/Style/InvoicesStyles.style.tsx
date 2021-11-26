@@ -35,6 +35,7 @@ export const PageHeader = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
 
 `
 export const HeaderButtonsWrapper = styled.div`
@@ -64,11 +65,16 @@ export const HeaderButton = styled.button<HeaderButtonProps>`
         cursor: pointer;
         opacity: 1;
     }
+    :disabled{
+        :hover{
+            opacity: 0.7;
+            cursor: default;
+        }
+    }
 `
 export const PageHeadingWrapper = styled.div`
     display: flex;
     align-items: center;
-    margin-bottom: 20px ;
 `
 export const PageHeading = styled.h1`
     font-weight: 700;

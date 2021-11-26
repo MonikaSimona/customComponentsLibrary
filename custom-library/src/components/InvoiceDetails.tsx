@@ -27,11 +27,11 @@ interface Props {
 }
 
 export const currencyOptions = [{
-    value: "dollar",
+    value: "usd",
     label: "$ United States Dollar"
 },
 {
-    value: "euro",
+    value: "eur",
     label: "€ Euro"
 }]
 
@@ -41,6 +41,7 @@ const InvoiceDetails = (props: Props) => {
     const invoiceData: any = location.state;
     const totalAmount = invoiceData.total.toLocaleString();
     var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const inoviceId = invoiceData.id;
     const stringDate = invoiceData.due_date.split("/");
     const month = months[stringDate[1] - 1];
     const [selectedApprover, setSelectedApprover] = useState<Options>();
@@ -83,9 +84,7 @@ const InvoiceDetails = (props: Props) => {
 
 
     const formatOptionLabel = (props: Options) => (
-
         <SelectOptionText>{props.label}</SelectOptionText>
-
     )
 
     useEffect(() => {
@@ -109,11 +108,23 @@ const InvoiceDetails = (props: Props) => {
         resolver: yupResolver(schema),
     });
     const onSubmit = (data: InvoiceData) => {
-        console.log("DATA", data)
-        console.log("ERRORS", errors)
-        console.log("WATCH", watch)
-        // editInvoice(data);
-        // history.goBack();
+        let editedDataObject: any = {};
+        _.forOwn(data, (value, key) => value && _.set(editedDataObject, key, value))
+        if (selectedApprover) {
+            _.set(editedDataObject, "approver", selectedApprover.label)
+        }
+        _.set(editedDataObject, "total", _.toNumber(data.total))
+
+
+        console.log("NEW", editedDataObject);
+
+        editInvoice(editedDataObject, inoviceId)
+
+        // console.log("DATA", data)
+        // console.log("ERRORS", errors)
+        // console.log("WATCH", watch)
+        // console.log("approver", selectedApprover?.label)
+        history.goBack();
 
     }
     const onNewSupplierSubmit = (data: any) => {
@@ -126,8 +137,6 @@ const InvoiceDetails = (props: Props) => {
                 }
             }
         ).then((response) => {
-
-
         })
             .catch((err) => console.log(err))
 
@@ -146,7 +155,7 @@ const InvoiceDetails = (props: Props) => {
         <>
             <Modal visible={visible} toggle={toggle} closeButtonElement={<IoMdClose />}>
                 <FormWrapper>
-                    <Form onSubmit={handleSubmit(onNewSupplierSubmit)}>
+                    <Form onSubmit={handleSubmit(onNewSupplierSubmit)} id="id">
                         <FormHeading>
                             Add new supplier
                         </FormHeading>
@@ -342,14 +351,14 @@ const InvoiceDetails = (props: Props) => {
                                     <Col md={4}>
                                         <Label>Amount incl.tax</Label>
                                         <InputWrapper>
-                                            <Input type="text" {...register("amount_tax")} defaultValue={invoiceData.total} />
+                                            <Input type="text" {...register("total")} defaultValue={invoiceData.total} />
                                             <InputSufix>{currency}</InputSufix>
                                         </InputWrapper>
                                     </Col>
                                     <Col md={4}>
                                         <Label>Amount excluding tax</Label>
                                         <InputWrapper>
-                                            <Input type="text" {...register("amount_no_tax")} defaultValue={invoiceData.total} />
+                                            <Input type="text" {...register("amount_no_tax")} defaultValue={invoiceData.total} disabled />
                                             <InputSufix>{currency}</InputSufix>
                                         </InputWrapper>
                                     </Col>
@@ -365,7 +374,7 @@ const InvoiceDetails = (props: Props) => {
                                                 name={name}
                                                 options={currencyOptions}
                                                 onChange={(selectedOption: any): any => {
-                                                    return onChange(selectedOption.label)
+                                                    return onChange(selectedOption.value)
                                                 }}
                                                 components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
 
@@ -378,14 +387,14 @@ const InvoiceDetails = (props: Props) => {
                                     <Col md={4}>
                                         <Label>Converted amount incl.tax</Label>
                                         <InputWrapper>
-                                            <Input type="text" {...register("conv_amount_tax")} defaultValue={convertCurrency(invoiceData.total).toLocaleString()} />
+                                            <Input type="text" {...register("conv_amount_tax")} defaultValue={convertCurrency(invoiceData.total).toLocaleString()} disabled />
                                             <InputSufix>{currencyInvert}</InputSufix>
                                         </InputWrapper>
                                     </Col>
                                     <Col md={4}>
                                         <Label>Converted amount excl.tax</Label>
                                         <InputWrapper>
-                                            <Input type="text" {...register("conv_amount_no_tax")} defaultValue={convertCurrency(invoiceData.total).toLocaleString()} />
+                                            <Input type="text" {...register("conv_amount_no_tax")} defaultValue={convertCurrency(invoiceData.total).toLocaleString()} disabled />
                                             <InputSufix>{currencyInvert}</InputSufix>
                                         </InputWrapper>
                                     </Col>
