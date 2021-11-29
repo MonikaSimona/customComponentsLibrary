@@ -110,8 +110,10 @@ const InvoiceDetails = (props: Props) => {
     const onSubmit = (data: InvoiceData) => {
         let editedDataObject: any = {};
         _.forOwn(data, (value, key) => value && _.set(editedDataObject, key, value))
+        console.log(selectedApprover)
         if (selectedApprover) {
-            _.set(editedDataObject, "approver", selectedApprover.label)
+            const approverObject = { name: selectedApprover.label, imgUrl: selectedApprover.customAbbreviation }
+            _.set(editedDataObject, "approver", approverObject)
         }
         _.set(editedDataObject, "total", _.toNumber(data.total))
 
@@ -120,11 +122,7 @@ const InvoiceDetails = (props: Props) => {
 
         editInvoice(editedDataObject, inoviceId)
 
-        // console.log("DATA", data)
-        // console.log("ERRORS", errors)
-        // console.log("WATCH", watch)
-        // console.log("approver", selectedApprover?.label)
-        history.goBack();
+        history.push("/", "refresh");
 
     }
     const onNewSupplierSubmit = (data: any) => {

@@ -6,7 +6,7 @@ import { Colors, Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapp
 import { CgFileDocument } from 'react-icons/cg'
 import { BsFunnel, BsArchive } from 'react-icons/bs'
 import { CgCloseO } from 'react-icons/cg'
-import { useHistory } from 'react-router'
+import { useHistory, useLocation } from 'react-router'
 import _, { uniqueId } from "lodash";
 import Tooltip from '../customCumponents/Tooltip/Tooltip';
 import useModal from '../customCumponents/Modal/useModal';
@@ -61,6 +61,7 @@ export const selectStyles = {
 
 const Invoices = (props: Props) => {
     const history = useHistory();
+    const location = useLocation();
     const [invoiceData, setInvoiceData] = useState<InvoiceData[]>([]);
     const [filteredInvoiceData, setFilteredInvoiceData] = useState<InvoiceData[]>([])
     const [supplierData, setSupplierData] = useState<SupplierData[]>([]);
@@ -121,9 +122,11 @@ const Invoices = (props: Props) => {
     }
 
     useEffect(() => {
+
         getData("approvers");
         getData("posts");
         getData("suppliers");
+
 
     }, [])
 

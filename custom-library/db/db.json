@@ -2,9 +2,9 @@
   "posts": [
     {
       "id": "0",
-      "invoice_date": "31/10/2019",
+      "invoice_date": "2019-10-31",
       "supplier": "Mailijet saas itd",
-      "due_date": "28/11/2019",
+      "due_date": "2019-11-28",
       "invoice_number": "1097",
       "total": 1000,
       "currency": "usd",
@@ -16,9 +16,9 @@
     },
     {
       "id": "1",
-      "invoice_date": "01/03/2020",
+      "invoice_date": "2020-03-01",
       "supplier": "Upflow",
-      "due_date": "01/03/2020",
+      "due_date": "2020-03-01",
       "invoice_number": "929",
       "total": 240,
       "currency": "eur",
@@ -27,34 +27,6 @@
         "imgUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
       },
       "status": "approved"
-    },
-    {
-      "approver": {
-        "name": "John Smith",
-        "imgUrl": "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80"
-      },
-      "total": 600,
-      "currency": "eur",
-      "invoice_number": "SS-988",
-      "due_date": "2021-11-04",
-      "supplier": "Sabrina paire",
-      "invoice_date": "2021-11-12",
-      "id": "c015f76b-cf14-4035-a7d4-638faf3617f7",
-      "status": "approved"
-    },
-    {
-      "currency": "eur",
-      "approver": {
-        "name": "Louis Pignet",
-        "imgUrl": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
-      },
-      "total": 500,
-      "invoice_number": "1232",
-      "due_date": "26/11/2021",
-      "supplier": "Merkur",
-      "invoice_date": "18/11/2021",
-      "id": "780d57be-c917-44fe-8464-99dc1c3de32a",
-      "status": "recorded"
     }
   ],
   "suppliers": [
