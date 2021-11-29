@@ -35,12 +35,26 @@
       },
       "total": 600,
       "currency": "eur",
-      "invoice_number": "SS-98",
+      "invoice_number": "SS-988",
       "due_date": "2021-11-04",
       "supplier": "Sabrina paire",
       "invoice_date": "2021-11-12",
       "id": "c015f76b-cf14-4035-a7d4-638faf3617f7",
       "status": "approved"
+    },
+    {
+      "currency": "eur",
+      "approver": {
+        "name": "Louis Pignet",
+        "imgUrl": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
+      },
+      "total": 500,
+      "invoice_number": "1232",
+      "due_date": "26/11/2021",
+      "supplier": "Merkur",
+      "invoice_date": "18/11/2021",
+      "id": "780d57be-c917-44fe-8464-99dc1c3de32a",
+      "status": "recorded"
     }
   ],
   "suppliers": [

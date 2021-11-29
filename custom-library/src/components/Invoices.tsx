@@ -278,7 +278,7 @@ const Invoices = (props: Props) => {
         invoice_number: yup.string().required("Must provide invoice number"),
         total: yup.number().typeError("Total should be number").required("Must total amount"),
         approver: yup.string().required("Must choose approver"),
-        currency: yup.string().required("Must provide currency.")
+        currency: yup.string().required("Must provide currency")
     })
     const { register, handleSubmit, control, reset, formState: { errors }, setValue, getValues } = useForm({
         resolver: yupResolver(schema),
@@ -358,8 +358,6 @@ const Invoices = (props: Props) => {
                                 key={`currency${value && value.label}`}
                                 ref={ref}
                                 value={_.find(currencyOptions, (c) => c.value === value)}
-                                defaultValue={currencyOptions[0]}
-
                                 name={name}
                                 options={currencyOptions}
                                 onChange={(selectedOption: any): any => {
