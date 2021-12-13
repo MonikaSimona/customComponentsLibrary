@@ -192,16 +192,19 @@ export const RowIconsWrapper = styled.div`
     width: 100px;
     display: flex;
     justify-content: end;
+    gap:25px
 `
 
 export const RowIcon = styled.p<IconProps>`
     display: ${props => props.isBlock ? "block" : "none"};
-    color:${Colors.lightGray} ;
+    color: ${props => props.isDelete ? "maroon" : Colors.lightGray} ;
     margin: 0;
     transition: .3s;
+    
     &:hover{
         color:  black;
     }
+   
 `
 export const SelectWrapper = styled.div`
   

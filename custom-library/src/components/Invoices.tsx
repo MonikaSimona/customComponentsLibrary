@@ -13,15 +13,18 @@ import useModal from '../customCumponents/Modal/useModal';
 import Modal from '../customCumponents/Modal/Modal';
 import { IoMdClose } from 'react-icons/io';
 import { AiOutlineFileAdd } from 'react-icons/ai';
-import { TableRow, Table, TableBody, TableData, TableHead, TableHeader, EmptyCell, CellStatusIndicator } from './Style/InvoiceTableStyles.style';
+import { TableRow, Table, TableBody, TableData, TableHead, TableHeader, EmptyCell, CellStatusIndicator, RowForm, TableRowInput, TableDataWrapper } from './Style/InvoiceTableStyles.style';
 import { DateInput, ErrorMessage, Form, FormHeading, FormWrapper, Input, InputSufix, InputWrapper, Label, SubmitButton } from './Style/InvoiceFormStyles.style';
 import { Controller, useForm } from 'react-hook-form';
 import { ApproverData, InvoiceData, Options, SupplierData } from './Props';
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { v4 as uuid } from "uuid"
-import { MdArrowDropDown } from 'react-icons/md';
+import { MdArrowDropDown, MdOutlineModeEditOutline } from 'react-icons/md';
 import { currencyOptions } from './InvoiceDetails';
+import { watch } from 'fs';
+
+
 
 interface Props {
 }
@@ -70,6 +73,8 @@ const Invoices = (props: Props) => {
     const [supplierOptions, setSupplierOptions] = useState<Options[]>([])
     const [invoiceStatus, setInvoiceStatus] = useState("")
     const [statusLenghts, setStatusLenghts] = useState({ numberNew: 0, numberRecorded: 0, numberApproved: 0, numberPaid: 0 })
+
+    const [editableRow, setEditableRow] = useState(true)
 
     const { visible, toggle } = useModal();
 
@@ -123,11 +128,9 @@ const Invoices = (props: Props) => {
 
     useEffect(() => {
 
+        getData("suppliers");
         getData("approvers");
         getData("posts");
-        getData("suppliers");
-
-
     }, [])
 
 
@@ -156,6 +159,7 @@ const Invoices = (props: Props) => {
         _.set(newInvoice, 'due_date', duedate);
         _.set(newInvoice, 'invoice_date', invoicedate);
         _.set(newInvoice, 'status', "new");
+        _.set(newInvoice, "supplier", { name: formData.supplier })
 
 
         console.log(newInvoice)
@@ -179,6 +183,12 @@ const Invoices = (props: Props) => {
             })
             .catch(err => console.log(err))
     }
+
+    const editInvoiceInline = (editData: InvoiceData, id: string) => {
+
+
+    }
+
     const formatOptionLabel = (props: Options) => {
         return <SelectOptionWrapper>
             <SelectOptionImg src={props.customAbbreviation} alt="" />
@@ -187,9 +197,41 @@ const Invoices = (props: Props) => {
     }
 
 
+
     //REACT-TABLE
     const invoices = useMemo(() => [...filteredInvoiceData], [filteredInvoiceData])
     const invoicesColumns: any = useMemo(() => filteredInvoiceData[0] ? Object.keys(filteredInvoiceData[0]).filter((key) => key !== "random").map((key) => {
+        if (key === "supplier") {
+            return {
+                Header: key,
+                accessor: key,
+                Cell: (value: any) => {
+                    const supplier: SupplierData = value.cell.value;
+
+                    const defVal: any | undefined = _.find(supplierOptions, { label: supplier && supplier.name })
+
+                    return <SelectWrapper onClick={(e) => { e.stopPropagation(); }}>
+                        <Controller control={control} render={({ field: { onChange, value, name, ref } }) => (
+                            <Select
+                                defaultValue={defVal}
+                                key={`supplier${value && value.label}`}
+                                ref={ref}
+                                value={_.find(supplierOptions, (c) => c.value === value)}
+                                name={name}
+                                options={supplierOptions}
+                                formatOptionLabel={formatSupplierOptionLabel}
+                                onChange={(selectedOption: any): any => {
+                                    return onChange(selectedOption.label)
+                                }}
+                                styles={selectStyles}
+                                theme={boxSelectTheme}
+                                components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} cursor="pointer" />, IndicatorSeparator: () => null }}
+                            />
+                        )} name={"supplier_row"} rules={{ required: true }} />
+                    </SelectWrapper>
+                },
+            }
+        }
         if (key === "approver") {
             return {
                 Header: key,
@@ -197,14 +239,25 @@ const Invoices = (props: Props) => {
                 Cell: (value: any) => {
                     const approver: ApproverData = value.cell.value;
                     const defVal: any | undefined = _.find(approverOptions, { label: approver && approver.name })
+
                     return <SelectWrapper onClick={(e) => { e.stopPropagation(); }}>
-                        <Select
-                            key={defVal}
-                            defaultValue={defVal} formatOptionLabel={formatOptionLabel} options={approverOptions && approverOptions} isSearchable={false}
-                            theme={boxSelectTheme}
-                            components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} />, IndicatorSeparator: () => null }}
-                            styles={selectStyles}
-                        />
+                        <Controller control={control} render={({ field: { onChange, value, name, ref } }) => (
+                            <Select
+                                key={`approver${value && value.label}`}
+                                defaultValue={defVal}
+                                ref={ref}
+                                value={_.find(approverOptions, (c) => c.value === value)}
+                                name={name}
+                                options={approverOptions}
+                                formatOptionLabel={formatOptionLabel}
+                                onChange={(selectedOption: any): any => {
+                                    return onChange(selectedOption.label)
+                                }}
+                                styles={selectStyles}
+                                theme={boxSelectTheme}
+                                components={{ DropdownIndicator: () => <MdArrowDropDown fontSize={30} color={Colors.lightGray} cursor="pointer" />, IndicatorSeparator: () => null }}
+                            />
+                        )} name={"approver_row"} rules={{ required: true }} />
                     </SelectWrapper>
                 },
             }
@@ -226,7 +279,11 @@ const Invoices = (props: Props) => {
             return {
                 Header: headerKey,
                 accessor: "invoice_date",
-                Cell: (value: any) => { return <TableData> <CellStatusIndicator status={value.cell.row.values.status} /> {value.cell.row.values.invoice_date}</TableData> },
+                Cell: (value: any) => {
+                    return <TableDataWrapper>
+                        <CellStatusIndicator status={value.cell.row.values.status} /> <TableRowInput type="text" {...register("invoice_date_row")} onClick={(e) => { e.stopPropagation(); }} defaultValue={value.cell.row.values.invoice_date} />
+                    </TableDataWrapper>
+                },
 
             }
         }
@@ -234,11 +291,11 @@ const Invoices = (props: Props) => {
             return {
                 Headers: key,
                 accessor: "total",
-                Cell: (value: any) => { return <TableData> {value.cell.row.values.total.toLocaleString()}  {value.cell.row.values.currency === "usd" ? "$" : "€"} </TableData> }
+                Cell: (value: any) => { return <TableRowInput {...register("total_row")} type="text" onClick={(e) => { e.stopPropagation(); }} defaultValue={`${value.cell.row.values.total.toLocaleString()} ${value.cell.row.values.currency === "usd" ? "$" : "€"}`} /> }
             }
         }
 
-        return { Header: headerKey, accessor: key }
+        return { Header: headerKey, accessor: key, Cell: (value: any) => { return <TableRowInput type="text" {...register(`${key}_row`)} defaultValue={value.cell.row.values[key]} onClick={(e) => { e.stopPropagation(); }} /> } }
     }) : [], [invoiceData]);
 
     const tableHooks = (hooks: any) => {
@@ -256,17 +313,28 @@ const Invoices = (props: Props) => {
                 Cell: ({ row }: any) => {
 
                     return <RowIconsWrapper>
+                        <Tooltip message="Edit" bgColor="#193169" textColor="white" position="top center">
+                            <button type="submit" onClick={(e) => {
+                                e.stopPropagation();
+
+
+                            }} >
+                                <MdOutlineModeEditOutline />
+                            </button>
+                        </Tooltip>
                         <Tooltip message="Delete" bgColor="#193169" textColor="white" position="top center">
-                            <RowIcon isBlock={true} onClick={(e) => { e.stopPropagation(); deleteInvoice(row.values.id) }}>
+                            <RowIcon isDelete={true} isBlock={true} onClick={(e) => { e.stopPropagation(); deleteInvoice(row.values.id) }}>
                                 <CgCloseO />
                             </RowIcon>
                         </Tooltip>
+
                     </RowIconsWrapper>
                 }
             }
 
         ])
     }
+
     const tableInstance = useTable({ columns: invoicesColumns, data: invoices }, tableHooks);
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
     //REACT-TABLE
@@ -283,9 +351,11 @@ const Invoices = (props: Props) => {
         approver: yup.string().required("Must choose approver"),
         currency: yup.string().required("Must provide currency")
     })
-    const { register, handleSubmit, control, reset, formState: { errors }, setValue, getValues } = useForm({
+    const { register, handleSubmit, control, reset, formState: { errors }, setValue, getValues, watch } = useForm({
         resolver: yupResolver(schema),
     });
+
+
 
 
     const onSubmit = (data: InvoiceData) => {
@@ -294,8 +364,13 @@ const Invoices = (props: Props) => {
         //reseting the selects
         setValue("supplier", null);
         setValue("approver", null);
+        toggle();
 
 
+
+    }
+    const submitEditInline = (data: InvoiceData) => {
+        console.log("Row Data", data)
 
     }
     //REACT-HOOK-FORM
@@ -429,34 +504,41 @@ const Invoices = (props: Props) => {
                     <TabButton status="approved" onClick={() => setInvoiceStatus("approved")} active={invoiceStatus === "approved"} >Approved<NumberOfInvoice>({statusLenghts.numberApproved})</NumberOfInvoice></TabButton>
                     <TabButton status="paid" onClick={() => setInvoiceStatus("paid")} active={invoiceStatus === "paid"} >Paid<NumberOfInvoice>({statusLenghts.numberPaid})</NumberOfInvoice></TabButton>
                 </TabButtonsWrapper>
-                <Table {...getTableProps()}>
-                    <TableHead>
-                        {headerGroups.map((headerGroup) => (
-                            <TableRow isHeader={true} {...headerGroup.getHeaderGroupProps()} >
-                                {headerGroup.headers.map((column) => (
-                                    <TableHeader {...column.getHeaderProps()}>
-                                        {column.render("Header")}
-                                    </TableHeader>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableHead>
-                    <TableBody {...getTableBodyProps()}>
-                        {rows.map((row) => {
-                            prepareRow(row);
-                            return <TableRow isHeader={false} {...row.getRowProps}
-                                onClick={() => {
-                                    const dataToPass = _.set(row.values, 'options', { approverOptions, supplierOptions });
-                                    history.push("/details", dataToPass)
-                                }}>
-                                {row.cells.map((cell, index) => (
-                                    <TableData  {...cell.getCellProps()}>{cell.render("Cell")}</TableData>
-                                ))}
-                            </TableRow>
-                        })}
-                    </TableBody>
-                </Table>
+                <RowForm onSubmit={handleSubmit(submitEditInline)}>
+                    <Table {...getTableProps()}>
+                        <TableHead>
+                            {headerGroups.map((headerGroup) => (
+                                <TableRow isHeader={true} {...headerGroup.getHeaderGroupProps()} >
+                                    {headerGroup.headers.map((column) => (
+                                        <TableHeader {...column.getHeaderProps()}>
+                                            {column.render("Header")}
+                                        </TableHeader>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableHead>
 
+                        <TableBody {...getTableBodyProps()}>
+                            {rows.map((row) => {
+                                prepareRow(row);
+
+                                return <TableRow isHeader={false} {...row.getRowProps}
+                                    onClick={() => {
+                                        const dataToPass = _.set(row.values, 'options', { approverOptions, supplierOptions });
+                                        history.push("/details", dataToPass)
+                                    }}>
+                                    {row.cells.map((cell, index) => (
+
+                                        <TableData  {...cell.getCellProps()}> {cell.render("Cell")}</TableData>
+                                    ))}
+                                </TableRow>
+
+
+                            })}
+                        </TableBody>
+
+                    </Table>
+                </RowForm>
             </Container>
         </>
     )

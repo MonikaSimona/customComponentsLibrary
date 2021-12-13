@@ -89,6 +89,7 @@ const InvoiceDetails = (props: Props) => {
 
     useEffect(() => {
         console.log(statusState)
+        console.log("Supplier", invoiceData.supplier.name)
         if (statusState) {
             editInvoice({ status: statusState }, invoiceData.id)
 
@@ -115,6 +116,8 @@ const InvoiceDetails = (props: Props) => {
             const approverObject = { name: selectedApprover.label, imgUrl: selectedApprover.customAbbreviation }
             _.set(editedDataObject, "approver", approverObject)
         }
+        const supplierObject = { name: data.supplier };
+        _.set(editedDataObject, "supplier", supplierObject);
         _.set(editedDataObject, "total", _.toNumber(data.total))
 
 
@@ -127,25 +130,29 @@ const InvoiceDetails = (props: Props) => {
     }
     const onNewSupplierSubmit = (data: any) => {
         console.log("DATA Supplier", data.company_name)
-        const newSupplier = { id: uuid, name: data.company_name }
-        axios.post("http://localhost:3000/suppliers", newSupplier,
-            {
-                headers: {
-                    "Content-Type": "application/json",
+        if (data.company_name) {
+            const newSupplier = { id: uuid, name: data.company_name }
+            axios.post("http://localhost:3000/suppliers", newSupplier,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
                 }
-            }
-        ).then((response) => {
-        })
-            .catch((err) => console.log(err))
-
-        reset();
-        console.log("ERRORS Supplier", errors)
-        console.log("WATCH Supplier", watch)
-        supplierOptions.push(
-            {
-                label: data.company_name,
-                value: data.company_name.split(" ")[0].toLowerCase(), customAbbreviation: data.company_name.split("")[0].toUpperCase()
+            ).then((response) => {
             })
+                .catch((err) => console.log(err))
+
+            reset();
+            console.log("ERRORS Supplier", errors)
+            console.log("WATCH Supplier", watch)
+            supplierOptions.push(
+                {
+                    label: data.company_name,
+                    value: data.company_name.split(" ")[0].toLowerCase(), customAbbreviation: data.company_name.split("")[0].toUpperCase()
+                })
+            toggle();
+        }
+
     }
 
 
@@ -208,11 +215,11 @@ const InvoiceDetails = (props: Props) => {
                         <DetailsSection first>
                             <Company>
                                 <CompanyInitial>
-                                    {invoiceData.supplier.charAt(0)}
+                                    {invoiceData.supplier.name.charAt(0)}
                                 </CompanyInitial>
                                 <CompanyInfo>
                                     <CompanyName>
-                                        {invoiceData.supplier}
+                                        {invoiceData.supplier.name}
                                     </CompanyName>
                                     <CompanyBillingAmount>
                                         {invoiceData.total.toLocaleString()} {currency}  <Sub>
@@ -286,7 +293,7 @@ const InvoiceDetails = (props: Props) => {
                                                 key={`supplier${value && value.label}`}
                                                 ref={ref}
                                                 value={_.find(supplierOptions, (c) => c.value === value)}
-                                                defaultValue={_.find(supplierOptions, { label: invoiceData.supplier })}
+                                                defaultValue={_.find(supplierOptions, { label: invoiceData.supplier.name })}
                                                 name={name}
                                                 options={supplierOptions}
                                                 formatOptionLabel={formatSupplierOptionLabel}

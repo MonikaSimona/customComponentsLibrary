@@ -4,6 +4,8 @@ export interface InvoiceProps {
 }
 export interface IconProps {
     isBlock: boolean;
+    isEdit?: boolean;
+    isDelete?: boolean;
 }
 export interface RowProps {
     isHeader: boolean;
@@ -21,10 +23,14 @@ export interface ApproverData {
     name: string;
     imgUrl: string;
 }
+export interface SupplierData {
+    id: number;
+    name: string;
+}
 export interface InvoiceData {
     id: number;
     invoice_date: string;
-    supplier: string;
+    supplier: SupplierData;
     due_date: string;
     invoice_number: string;
     total: number;
@@ -32,10 +38,6 @@ export interface InvoiceData {
     approver: ApproverData;
     currency: string;
 
-}
-export interface SupplierData {
-    id: number;
-    name: string;
 }
 export interface Options {
     value: string;

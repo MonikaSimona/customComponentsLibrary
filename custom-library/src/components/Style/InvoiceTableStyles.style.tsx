@@ -16,6 +16,9 @@ export const TableHead = styled.thead`
   border: 1px solid ${Colors.lightGray};
   background-color: white;
 `
+export const RowForm = styled.form`
+
+`
 
 export const TableRow = styled.tr<RowProps>`
 
@@ -41,11 +44,30 @@ export const TableBody = styled.tbody`
 
 `
 export const TableData = styled.td`
-  padding: 10px 5px;
+  padding: 10px 10px;
   font-weight: 300;
-  text-align: left;
+  /* text-align: left; */
+  
   font-size: 15px;
   color: black;
+  
+`
+export const TableDataWrapper = styled.div`
+  display:flex;
+  width:100%;
+  align-items:center;
+`
+export const TableRowInput = styled.input`
+  border:1px solid transparent;
+  padding:5px;
+  outline:none;
+  width:100%;
+  max-width:auto;
+  font-family: "Poppins",sans-serif;
+  &:focus, &:focus-visible{
+    border:1px solid ${Colors.lightGray}
+  }
+
 `
 // export const TableDataWrapper = styled
 

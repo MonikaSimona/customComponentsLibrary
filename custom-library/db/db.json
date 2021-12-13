@@ -3,7 +3,9 @@
     {
       "id": "0",
       "invoice_date": "2019-10-31",
-      "supplier": "Mailijet saas itd",
+      "supplier": {
+        "name": "Mailijet saas itd"
+      },
       "due_date": "2019-11-28",
       "invoice_number": "1097",
       "total": 1000,
@@ -15,18 +17,36 @@
       "status": "approved"
     },
     {
-      "id": "1",
-      "invoice_date": "2020-03-01",
-      "supplier": "Upflow",
-      "due_date": "2020-03-01",
-      "invoice_number": "929",
-      "total": 240,
       "currency": "eur",
       "approver": {
-        "name": "Hubert Durand",
-        "imgUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+        "name": "Louis Pignet",
+        "imgUrl": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
       },
-      "status": "approved"
+      "total": 2000,
+      "invoice_number": "222-88",
+      "due_date": "2021-12-01",
+      "supplier": {
+        "name": "Upwork"
+      },
+      "invoice_date": "2021-12-08",
+      "id": "569b2f93-e2cb-447a-be9f-61fe52b193fe",
+      "status": "new"
+    },
+    {
+      "currency": "usd",
+      "approver": {
+        "name": "Louis Pignet",
+        "imgUrl": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
+      },
+      "total": 260,
+      "invoice_number": "333",
+      "due_date": "16/12/2021",
+      "supplier": {
+        "name": "New Company"
+      },
+      "invoice_date": "17/12/2021",
+      "id": "b9b6cddb-d6cf-41c5-89d6-fc0bb7957c0b",
+      "status": "new"
     }
   ],
   "suppliers": [
@@ -57,6 +77,10 @@
     {
       "name": "Merkur",
       "id": "RZwh_Bw"
+    },
+    {
+      "name": "test",
+      "id": "iSjPaAL"
     }
   ],
   "approvers": [
