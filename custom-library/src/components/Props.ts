@@ -3,8 +3,8 @@ export interface InvoiceProps {
     active?: boolean;
 }
 export interface IconProps {
-    isBlock: boolean;
-    isEdit?: boolean;
+    isBlock?: boolean;
+    isEditable?: boolean;
     isDelete?: boolean;
 }
 export interface RowProps {

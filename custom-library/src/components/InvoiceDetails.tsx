@@ -48,9 +48,6 @@ const InvoiceDetails = (props: Props) => {
     const approverOptions: Options[] = invoiceData.options.approverOptions;
     const supplierOptions: Options[] = invoiceData.options.supplierOptions;
 
-    const defInvoiceDate = invoiceData.invoice_date.split("/")[2] + "-" + invoiceData.invoice_date.split("/")[1] + "-" + invoiceData.invoice_date.split("/")[0]
-    const defDueDate = invoiceData.due_date.split("/")[2] + "-" + invoiceData.due_date.split("/")[1] + "-" + invoiceData.due_date.split("/")[0]
-
     const [statusState, setStatusState] = useState("")
 
     const { toggle, visible } = useModal()
@@ -88,8 +85,6 @@ const InvoiceDetails = (props: Props) => {
     )
 
     useEffect(() => {
-        console.log(statusState)
-        console.log("Supplier", invoiceData.supplier.name)
         if (statusState) {
             editInvoice({ status: statusState }, invoiceData.id)
 
@@ -336,13 +331,13 @@ const InvoiceDetails = (props: Props) => {
                                     <Col md={4}>
                                         <Label>Billing date</Label>
                                         <InputWrapper>
-                                            <Input type="date" {...register("invoice_date")} defaultValue={defInvoiceDate} />
+                                            <Input type="date" {...register("invoice_date")} defaultValue={invoiceData.invoice_date} />
                                         </InputWrapper>
                                     </Col>
                                     <Col md={4}>
                                         <Label>Due date</Label>
                                         <InputWrapper>
-                                            <Input type="date" {...register("due_date")} defaultValue={defDueDate} />
+                                            <Input type="date" {...register("due_date")} defaultValue={invoiceData.due_date} />
                                         </InputWrapper>
                                     </Col>
                                     <Col md={4}>

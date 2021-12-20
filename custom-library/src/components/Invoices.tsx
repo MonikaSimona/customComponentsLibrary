@@ -2,12 +2,12 @@ import axios from 'axios'
 import React, { useEffect, useMemo, useState } from 'react'
 import Select from 'react-select';
 import { useTable } from 'react-table';
-import { Colors, Container, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, NumberOfInvoice, PageHeader, PageHeading, PageHeadingWrapper, RowIcon, RowIconsWrapper, SelectOptionImg, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, SelectWrapper, TabButton, TabButtonsWrapper, } from './Style/InvoicesStyles.style';
+import { Colors, Container, EditIcon, HeaderButton, HeaderButtonsWrapper, HeadingIconWrapper, NumberOfInvoice, PageHeader, PageHeading, PageHeadingWrapper, RowIcon, RowIconsWrapper, SelectOptionImg, SelectOptionInitial, SelectOptionText, SelectOptionWrapper, SelectWrapper, TabButton, TabButtonsWrapper, } from './Style/InvoicesStyles.style';
 import { CgFileDocument } from 'react-icons/cg'
 import { BsFunnel, BsArchive } from 'react-icons/bs'
 import { CgCloseO } from 'react-icons/cg'
 import { useHistory, useLocation } from 'react-router'
-import _, { uniqueId } from "lodash";
+import _, { sample, uniqueId } from "lodash";
 import Tooltip from '../customCumponents/Tooltip/Tooltip';
 import useModal from '../customCumponents/Modal/useModal';
 import Modal from '../customCumponents/Modal/Modal';
@@ -20,9 +20,9 @@ import { ApproverData, InvoiceData, Options, SupplierData } from './Props';
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { v4 as uuid } from "uuid"
-import { MdArrowDropDown, MdOutlineModeEditOutline } from 'react-icons/md';
+import { MdArrowDropDown } from 'react-icons/md';
 import { currencyOptions } from './InvoiceDetails';
-import { watch } from 'fs';
+
 
 
 
@@ -64,7 +64,6 @@ export const selectStyles = {
 
 const Invoices = (props: Props) => {
     const history = useHistory();
-    const location = useLocation();
     const [invoiceData, setInvoiceData] = useState<InvoiceData[]>([]);
     const [filteredInvoiceData, setFilteredInvoiceData] = useState<InvoiceData[]>([])
     const [supplierData, setSupplierData] = useState<SupplierData[]>([]);
@@ -74,7 +73,6 @@ const Invoices = (props: Props) => {
     const [invoiceStatus, setInvoiceStatus] = useState("")
     const [statusLenghts, setStatusLenghts] = useState({ numberNew: 0, numberRecorded: 0, numberApproved: 0, numberPaid: 0 })
 
-    const [editableRow, setEditableRow] = useState(true)
 
     const { visible, toggle } = useModal();
 
@@ -128,8 +126,8 @@ const Invoices = (props: Props) => {
 
     useEffect(() => {
 
-        getData("suppliers");
         getData("approvers");
+        getData("suppliers");
         getData("posts");
     }, [])
 
@@ -146,8 +144,7 @@ const Invoices = (props: Props) => {
         let newInvoice: any;
         const approverName = formData?.approver;
         let newInvoiceApprover: any | undefined;
-        let duedate = formData?.due_date.split("-")[2] + "/" + formData?.due_date.split("-")[1] + "/" + formData?.due_date.split("-")[0];
-        let invoicedate = formData?.invoice_date.split("-")[2] + "/" + formData?.invoice_date.split("-")[1] + "/" + formData?.invoice_date.split("-")[0];
+
         //creating approver object
         newInvoiceApprover = _.find(approverData, { name: approverName })
         _.unset(newInvoiceApprover, "id")
@@ -156,8 +153,8 @@ const Invoices = (props: Props) => {
         newInvoice = { ...formData };
         _.set(newInvoice, 'approver', newInvoiceApprover);
         _.set(newInvoice, 'id', uuid());
-        _.set(newInvoice, 'due_date', duedate);
-        _.set(newInvoice, 'invoice_date', invoicedate);
+        // _.set(newInvoice, 'due_date', duedate);
+        // _.set(newInvoice, 'invoice_date', invoicedate);
         _.set(newInvoice, 'status', "new");
         _.set(newInvoice, "supplier", { name: formData.supplier })
 
@@ -184,8 +181,18 @@ const Invoices = (props: Props) => {
             .catch(err => console.log(err))
     }
 
-    const editInvoiceInline = (editData: InvoiceData, id: string) => {
-
+    const editInvoiceInline = (value: any, rowId: string, columnId: string) => {
+        const editObject = { [columnId]: value };
+        console.log(editObject)
+        axios.patch(`http://localhost:3000/posts/${rowId}`, editObject, {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }
+        ).then((response) => {
+            console.log(response)
+        })
+            .catch((err) => console.log(err))
 
     }
 
@@ -251,6 +258,7 @@ const Invoices = (props: Props) => {
                                 options={approverOptions}
                                 formatOptionLabel={formatOptionLabel}
                                 onChange={(selectedOption: any): any => {
+
                                     return onChange(selectedOption.label)
                                 }}
                                 styles={selectStyles}
@@ -280,8 +288,14 @@ const Invoices = (props: Props) => {
                 Header: headerKey,
                 accessor: "invoice_date",
                 Cell: (value: any) => {
+                    // console.log(value)
                     return <TableDataWrapper>
-                        <CellStatusIndicator status={value.cell.row.values.status} /> <TableRowInput type="text" {...register("invoice_date_row")} onClick={(e) => { e.stopPropagation(); }} defaultValue={value.cell.row.values.invoice_date} />
+                        <CellStatusIndicator status={value.cell.row.values.status} />
+                        <TableRowInput type="text" placeholder={value.cell.row.values.invoice_date} onClick={(e) => { e.stopPropagation(); }}
+                            onBlur={(e) => editInvoiceInline(e.target.value, value.row.values.id, value.column.id)}
+                        />
+
+
                     </TableDataWrapper>
                 },
 
@@ -291,37 +305,31 @@ const Invoices = (props: Props) => {
             return {
                 Headers: key,
                 accessor: "total",
-                Cell: (value: any) => { return <TableRowInput {...register("total_row")} type="text" onClick={(e) => { e.stopPropagation(); }} defaultValue={`${value.cell.row.values.total.toLocaleString()} ${value.cell.row.values.currency === "usd" ? "$" : "€"}`} /> }
+                Cell: (value: any) => {
+                    return <TableRowInput type="text"
+                        onClick={(e) => { e.stopPropagation(); }}
+                        placeholder={`${value.cell.row.values.total.toLocaleString()} ${value.cell.row.values.currency === "usd" ? "$" : "€"}`}
+                        onBlur={(e) => editInvoiceInline(e.target.value, value.row.values.id, value.column.id)} />
+                }
             }
         }
 
-        return { Header: headerKey, accessor: key, Cell: (value: any) => { return <TableRowInput type="text" {...register(`${key}_row`)} defaultValue={value.cell.row.values[key]} onClick={(e) => { e.stopPropagation(); }} /> } }
+        return {
+            Header: headerKey,
+            accessor: key,
+            Cell: (value: any) => { return <TableRowInput type="text" {...register(`${key}_row`)} defaultValue={value.cell.row.values[key]} onClick={(e) => { e.stopPropagation(); }} onBlur={(e) => editInvoiceInline(e.target.value, value.row.values.id, value.column.id)} /> }
+        }
     }) : [], [invoiceData]);
 
     const tableHooks = (hooks: any) => {
         hooks.visibleColumns.push((columns: any) => [
-            {
-                id: "checkBox",
-                Header: "",
-                Cell: ({ row }: any) => (
-                    <input type="checkbox" />
-                )
-            }, ...columns,
+            ...columns,
             {
                 id: "icons",
                 Header: "",
                 Cell: ({ row }: any) => {
 
                     return <RowIconsWrapper>
-                        <Tooltip message="Edit" bgColor="#193169" textColor="white" position="top center">
-                            <button type="submit" onClick={(e) => {
-                                e.stopPropagation();
-
-
-                            }} >
-                                <MdOutlineModeEditOutline />
-                            </button>
-                        </Tooltip>
                         <Tooltip message="Delete" bgColor="#193169" textColor="white" position="top center">
                             <RowIcon isDelete={true} isBlock={true} onClick={(e) => { e.stopPropagation(); deleteInvoice(row.values.id) }}>
                                 <CgCloseO />
@@ -329,6 +337,8 @@ const Invoices = (props: Props) => {
                         </Tooltip>
 
                     </RowIconsWrapper>
+
+
                 }
             }
 
@@ -504,41 +514,41 @@ const Invoices = (props: Props) => {
                     <TabButton status="approved" onClick={() => setInvoiceStatus("approved")} active={invoiceStatus === "approved"} >Approved<NumberOfInvoice>({statusLenghts.numberApproved})</NumberOfInvoice></TabButton>
                     <TabButton status="paid" onClick={() => setInvoiceStatus("paid")} active={invoiceStatus === "paid"} >Paid<NumberOfInvoice>({statusLenghts.numberPaid})</NumberOfInvoice></TabButton>
                 </TabButtonsWrapper>
-                <RowForm onSubmit={handleSubmit(submitEditInline)}>
-                    <Table {...getTableProps()}>
-                        <TableHead>
-                            {headerGroups.map((headerGroup) => (
-                                <TableRow isHeader={true} {...headerGroup.getHeaderGroupProps()} >
-                                    {headerGroup.headers.map((column) => (
-                                        <TableHeader {...column.getHeaderProps()}>
-                                            {column.render("Header")}
-                                        </TableHeader>
-                                    ))}
-                                </TableRow>
-                            ))}
-                        </TableHead>
+                {/* <RowForm onSubmit={handleSubmit(submitEditInline)}> */}
+                <Table {...getTableProps()}>
+                    <TableHead>
+                        {headerGroups.map((headerGroup) => (
+                            <TableRow isHeader={true} {...headerGroup.getHeaderGroupProps()} >
+                                {headerGroup.headers.map((column) => (
+                                    <TableHeader {...column.getHeaderProps()}>
+                                        {column.render("Header")}
+                                    </TableHeader>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHead>
 
-                        <TableBody {...getTableBodyProps()}>
-                            {rows.map((row) => {
-                                prepareRow(row);
+                    <TableBody {...getTableBodyProps()}>
 
-                                return <TableRow isHeader={false} {...row.getRowProps}
-                                    onClick={() => {
-                                        const dataToPass = _.set(row.values, 'options', { approverOptions, supplierOptions });
-                                        history.push("/details", dataToPass)
-                                    }}>
-                                    {row.cells.map((cell, index) => (
+                        {rows.map((row) => {
+                            prepareRow(row);
+                            return <TableRow isHeader={false} {...row.getRowProps}
+                                onClick={() => {
+                                    const dataToPass = _.set(row.values, 'options', { approverOptions, supplierOptions });
+                                    history.push("/details", dataToPass)
+                                }}>
+                                {row.cells.map((cell, index) => (
 
-                                        <TableData  {...cell.getCellProps()}> {cell.render("Cell")}</TableData>
-                                    ))}
-                                </TableRow>
+                                    <TableData  {...cell.getCellProps()}> {cell.render("Cell")}</TableData>
+                                ))}
+                            </TableRow>
 
 
-                            })}
-                        </TableBody>
+                        })}
+                    </TableBody>
 
-                    </Table>
-                </RowForm>
+                </Table>
+                {/* </RowForm> */}
             </Container>
         </>
     )

@@ -2,13 +2,13 @@
   "posts": [
     {
       "id": "0",
-      "invoice_date": "2019-10-31",
+      "invoice_date": "12/12/2021",
       "supplier": {
         "name": "Mailijet saas itd"
       },
-      "due_date": "2019-11-28",
+      "due_date": "28/11/2019",
       "invoice_number": "1097",
-      "total": 1000,
+      "total": "1000",
       "currency": "usd",
       "approver": {
         "name": "Hubert Durand",
@@ -22,13 +22,13 @@
         "name": "Louis Pignet",
         "imgUrl": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
       },
-      "total": 2000,
+      "total": "200",
       "invoice_number": "222-88",
-      "due_date": "2021-12-01",
+      "due_date": "01/08/2021",
       "supplier": {
         "name": "Upwork"
       },
-      "invoice_date": "2021-12-08",
+      "invoice_date": "08/11/2021",
       "id": "569b2f93-e2cb-447a-be9f-61fe52b193fe",
       "status": "new"
     },
@@ -38,7 +38,7 @@
         "name": "Louis Pignet",
         "imgUrl": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
       },
-      "total": 260,
+      "total": "360",
       "invoice_number": "333",
       "due_date": "16/12/2021",
       "supplier": {

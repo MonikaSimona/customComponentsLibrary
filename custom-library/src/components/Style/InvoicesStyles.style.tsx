@@ -192,7 +192,7 @@ export const RowIconsWrapper = styled.div`
     width: 100px;
     display: flex;
     justify-content: end;
-    gap:25px
+    gap:25px;
 `
 
 export const RowIcon = styled.p<IconProps>`
@@ -205,6 +205,21 @@ export const RowIcon = styled.p<IconProps>`
         color:  black;
     }
    
+`
+export const EditIcon = styled.button<IconProps>`
+    background-color:transparent;
+    border: none;
+    color: ${Colors.lightGray};
+    ${({ isEditable }) => isEditable ? `
+        cursor:pointer;
+        color:green;
+    ` : `
+        cursor: not-allowed;
+    `}
+    
+
+
+
 `
 export const SelectWrapper = styled.div`
   
